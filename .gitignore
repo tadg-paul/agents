@@ -1,17 +1,42 @@
-# Repo policy and documentation.
+# Drop-in allowlist for an agent home such as ~/.claude or ~/.codex.
+# Default: ignore everything, then keep only human-maintained config and
+# versioned policy/prompt material.
+*
+!*/
+
+# Root metadata and policy documents.
 !.gitignore
 !README.md
-!AGENTS*.md
+!AGENTS.md
+!CLAUDE.md
+!CLAUDE.local.md
 !SDLC.md
-!docs/**
-!skills/**
-!commands/**
-!setup-*.sh
-!config-example.toml
-!settings-example.json
 
-# Re-block generated/local material everywhere, including inside allowed dirs.
+# Human-maintained live config.
+!config.toml
+!settings.json
+
+# Repository templates/examples.
+!config.example.toml
+!settings.example.json
+!*.example
+
+# Versioned prompt, skill, and policy trees.
+!docs
+!docs/**
+!commands
+!commands/**
+!prompts-commands
+!prompts-commands/**
+!skills
+!skills/**
+
+# Repository setup helpers.
+!setup-*.sh
+
+# Generated/local material, including inside allowed trees.
 **/.DS_Store
+**/Thumbs.db
 **/.venv/
 **/__pycache__/
 **/*.py[cod]
@@ -23,92 +48,65 @@
 **/tmp/
 **/log/
 **/logs/
-**/.codex/tmp/
-**/.claude/tmp/
-**/.agent/tmp/
+**/*.log
+**/*.cache
+**/*.tmp
+**/*.swp
+**/*~
 
-# Re-block Codex state, credentials, databases, histories, snapshots, and caches.
+# Agent runtime state, histories, snapshots, caches, and generated memory.
 auth.json
-config.toml
+credentials.json
 history.jsonl
 installation_id
 models_cache.json
 version.json
+stats-cache.json
+mcp-needs-auth-cache.json
 goals*.sqlite*
 logs*.sqlite*
 memories*.sqlite*
 state*.sqlite*
-sessions/
-cache/
-log/
-logs/
-shell_snapshots/
-tmp/
-.tmp/
-memories/
-rules/
 *.sqlite
 *.sqlite-shm
 *.sqlite-wal
 *.db
 *.db-shm
 *.db-wal
+sessions/**
+cache/**
+debug/**
+todos/**
+tasks/**
+ide/**
+plans/**
+session-env/**
+shell_snapshots/**
+shell-snapshots/**
+file-history/**
+paste-cache/**
+memories/**
+memory/**
+projects/**
+rules/**
+statsig/**
+telemetry/**
+plugins/**
+backups/**
+auth/**
+oauth/**
 
-# Re-block secret-like files by pattern.
+# Secrets and credential-like files.
 *.pem
 *.key
 *.crt
 *.p12
 *.pfx
+*.token
 *.env
 .env
 .env.*
 
-# Allow explicit examples/templates, not real local env files.
-!*.example
-
-# additional claude files to ignore
-
-debug/
-todos/
-tasks/
-ide/
-plans/
-session-env/
-shell-snapshots/
-file-history/
-paste-cache/
-# Memory (auto-generated, conversation-specific)
-memory/
-# Per-project memory (auto-generated, machine-specific)
-projects/
-# Profiling artefacts
+# Profiling artefacts.
 default.profraw
 *.profraw
-# History (sensitive - contains conversation data)
-# Telemetry & analytics
-statsig/
-telemetry/
-stats-cache.json
-mcp-needs-auth-cache.json
-# Cache
-# Plugins (nested git repos)
-plugins/
-# Backups (auto-generated)
-backups/
-# Credentials & secrets
-credentials.json
-*.token
-auth/
-oauth/
-# Logs and cache
-*.log
-*.cache
-# OS cruft
-.DS_Store
-Thumbs.db
-# Temp files
-*.tmp
-*.swp
-*~
-# Project-relative scratch directory (see DOCUMENTATION.md §"Reviewing doc changes")
