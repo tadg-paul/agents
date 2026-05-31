@@ -2,9 +2,9 @@
 description: End a discovery session. Default (promote): formalize the work into the central AC table with tests and close the issue. Alternative (rule out): git revert the discovery commits and close the issue. See ISSUES.md §"Discovery issues".
 ---
 
-End the current discovery session. Read and follow @~/.claude/docs/ISSUES.md §"Discovery issues".
+End the current discovery session. Read and follow @{agent-home}/docs/ISSUES.md §"Discovery issues".
 
-**This skill is user-invoked only.** Per CLAUDE.md §1, you may never invoke `/end-discovery` on your own initiative. The user decides when discovery ends.
+**This skill is user-invoked only.** Per AGENTS.md §1, you may never invoke `/end-discovery` on your own initiative. The user decides when discovery ends.
 
 Discovery is non-destructive in both paths. The user must indicate one of two outcomes:
 

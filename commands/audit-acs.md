@@ -15,6 +15,6 @@ Review the acceptance criteria for the current issue. Do not write any code or m
    - Does it contain any forbidden language?
    - Does it pass the litmus test?
 
-5. **Summarize.** Write the full findings to `./.claude/tmp/audit-acs-<NNN>.md` (project-relative scratch): missing edge cases, missing ACs, quality violations, with specific recommended additions or rewrites for each. Render and open: `~/bin/pandhtml ./.claude/tmp/audit-acs-<NNN>.md` (produces `./.claude/tmp/audit-acs-<NNN>.html`), then `open ./.claude/tmp/audit-acs-<NNN>.html`. **In chat: one line stating the totals (missing ACs, edge case gaps, quality violations) and the HTML path.**
+5. **Summarize.** Write the full findings to `./.agent/tmp/audit-acs-<NNN>.md` (project-relative scratch): missing edge cases, missing ACs, quality violations, with specific recommended additions or rewrites for each. Render and open: `~/bin/pandhtml ./.agent/tmp/audit-acs-<NNN>.md` (produces `./.agent/tmp/audit-acs-<NNN>.html`), then `open ./.agent/tmp/audit-acs-<NNN>.html`. **In chat: one line stating the totals (missing ACs, edge case gaps, quality violations) and the HTML path.**
 
 Do not proceed past this audit. Wait for my response.

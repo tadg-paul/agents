@@ -2,9 +2,9 @@
 description: Migrate ACs from a legacy (closed) issue into the central document `./docs/ACs.md`. See ISSUES.md §"Legacy AC migration".
 ---
 
-Migrate the ACs from a single legacy issue into `./docs/ACs.md`. Read and follow @~/.claude/docs/ISSUES.md §"Central AC document" and §"Legacy AC migration".
+Migrate the ACs from a single legacy issue into `./docs/ACs.md`. Read and follow @{agent-home}/docs/ISSUES.md §"Central AC document" and §"Legacy AC migration".
 
-**This skill is user-invoked only.** Per CLAUDE.md §1, you may never invoke `/migrate-acs` on your own initiative. Migration is the user's call.
+**This skill is user-invoked only.** Per AGENTS.md §1, you may never invoke `/migrate-acs` on your own initiative. Migration is the user's call.
 
 **Usage:** `/migrate-acs <issue-number>`
 

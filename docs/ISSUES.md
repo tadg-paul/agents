@@ -1,6 +1,6 @@
 # GitHub Issue Standards
 
-This document defines issue structure and AC quality standards. The process workflow - when to create issues, when to stop for approval, when to audit - is in CLAUDE.md §3.
+This document defines issue structure and AC quality standards. The process workflow - when to create issues, when to stop for approval, when to audit - is in SDLC.md §3.
 
 ---
 
@@ -209,7 +209,7 @@ Migration preserves history. Copy the AC verbatim, keep the original ID, add pro
 
 ### Tooling
 
-Use the `/migrate-acs N` skill (CLAUDE.md §3) to perform the per-issue migration. It is user-invoked only - agents do not migrate ACs on their own initiative.
+Use the `/migrate-acs N` skill (SDLC.md §3) to perform the per-issue migration. It is user-invoked only - agents do not migrate ACs on their own initiative.
 
 ---
 

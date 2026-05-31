@@ -24,7 +24,7 @@ Project documentation files (under `./docs/` in a project) should include a vers
 
 When making significant changes, increment the version and note what changed in a brief changelog at the end of the document.
 
-Global config files in `~/.claude/` are version-controlled via git and do not require version headers.
+Global agent config files (e.g. in `{agent-home}/`) are version-controlled via git and do not require version headers.
 
 ## Process
 
@@ -32,29 +32,29 @@ Global config files in `~/.claude/` are version-controlled via git and do not re
 - When changing any code, update the relevant documentation after (and not before).
 - After writing or editing any documentation file, run it through `sanitize` (from `tadg-paul/oed-sanitize`, installed at `~/.local/bin/sanitize`) to normalize spelling (OED standard) and fix problematic symbols. Sanitized content comes on stdout, a changes summary on stderr. Report the stderr summary in chat.
   ```bash
-  mkdir -p ./.claude/tmp
-  sanitize -q < path/to/file.md > ./.claude/tmp/sanitized.md
-  mv ./.claude/tmp/sanitized.md path/to/file.md
+  mkdir -p ./.agent/tmp
+  sanitize -q < path/to/file.md > ./.agent/tmp/sanitized.md
+  mv ./.agent/tmp/sanitized.md path/to/file.md
   ```
-- All scratch files must live under `./.claude/tmp/` (inside the project directory). Never use `/tmp/` for project-related scratch - it violates the §1 prohibition on writing outside the project directory.
+- All scratch files must live under `./.agent/tmp/` (inside the project directory). Never use `/tmp/` for project-related scratch - it violates the §1 prohibition on writing outside the project directory.
 
 ## Reviewing doc changes
 
-When proposing documentation edits - whether for approval or as evidence of completion - write the before and after versions to project-relative scratch files under `./.claude/tmp/`, run `sanitize` on the new version, then open a VS Code diff. I must review the sanitized version, not a pre-sanitize draft.
+When proposing documentation edits - whether for approval or as evidence of completion - write the before and after versions to project-relative scratch files under `./.agent/tmp/`, run `sanitize` on the new version, then open a VS Code diff. I must review the sanitized version, not a pre-sanitize draft.
 
 ```bash
-mkdir -p ./.claude/tmp
-cp path/to/file.md ./.claude/tmp/file_old.md
-cp path/to/file.md ./.claude/tmp/file_new.md
-# edit ./.claude/tmp/file_new.md
-sanitize -q < ./.claude/tmp/file_new.md > ./.claude/tmp/file_sanitized.md
-mv ./.claude/tmp/file_sanitized.md ./.claude/tmp/file_new.md
-code -d ./.claude/tmp/file_old.md ./.claude/tmp/file_new.md
+mkdir -p ./.agent/tmp
+cp path/to/file.md ./.agent/tmp/file_old.md
+cp path/to/file.md ./.agent/tmp/file_new.md
+# edit ./.agent/tmp/file_new.md
+sanitize -q < ./.agent/tmp/file_new.md > ./.agent/tmp/file_sanitized.md
+mv ./.agent/tmp/file_sanitized.md ./.agent/tmp/file_new.md
+code -d ./.agent/tmp/file_old.md ./.agent/tmp/file_new.md
 ```
 
 Apply to the real file only after approval or confirmation.
 
-`./.claude/tmp/` should be in the project's `.gitignore`. Clean up scratch files at the end of the task.
+`./.agent/tmp/` should be in the project's `.gitignore`. Clean up scratch files at the end of the task.
 
 ## Structure
 - Each project should have README.md or README.org (but not both)

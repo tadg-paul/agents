@@ -12,7 +12,7 @@ Perform a full review of the current issue's implementation. Long-form output (t
 6. Update project documentation as appropriate. **Help text counts as documentation** -- if this issue changed any executable's flags, behaviour, defaults, or user-visible output, update the corresponding `docs/<command>-help.md` (or wherever the help text lives) before APPROVED.
 7. Commit with message `Implement #[n]: [short description]` and push.
 8. Add a comment to the issue: implementation details, testing instructions, commit link.
-9. Write the full review to `./.claude/tmp/review-<NNN>.md` (project-relative scratch). Include:
+9. Write the full review to `./.agent/tmp/review-<NNN>.md` (project-relative scratch). Include:
    - Issue restatement (title, summary, link)
    - Full `make test` output from step 1
    - Standards checked: each section by name and number (from step 3)
@@ -20,6 +20,6 @@ Perform a full review of the current issue's implementation. Long-form output (t
    - UT results from step 4
    - Summary of all actions taken
    - Commit hash and push confirmation
-10. Convert and open: `~/bin/pandhtml ./.claude/tmp/review-<NNN>.md` (produces `./.claude/tmp/review-<NNN>.html`), then `open ./.claude/tmp/review-<NNN>.html`. **In chat: one line stating the HTML path.**
+10. Convert and open: `~/bin/pandhtml ./.agent/tmp/review-<NNN>.md` (produces `./.agent/tmp/review-<NNN>.html`), then `open ./.agent/tmp/review-<NNN>.html`. **In chat: one line stating the HTML path.**
 
 **End with:** `READY FOR REVIEW - issue #NNN` and the issue link. **STOP.**

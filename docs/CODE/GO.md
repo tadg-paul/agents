@@ -1,8 +1,8 @@
 # Go Standards
 
-Go-specific standards. The general coding standards in @~/.claude/docs/CODING.md apply on top of these.
+Go-specific standards. The general coding standards in @{agent-home}/docs/CODING.md apply on top of these.
 
-For Go applications that serve HTML/CSS/JavaScript (lean web apps, Hugo-adjacent services), the patterns here cover the server side; the response payload itself follows @~/.claude/docs/CODE/WEB.md.
+For Go applications that serve HTML/CSS/JavaScript (lean web apps, Hugo-adjacent services), the patterns here cover the server side; the response payload itself follows @{agent-home}/docs/CODE/WEB.md.
 
 ## Project Layout
 
@@ -81,7 +81,7 @@ cmd := fmt.Sprintf("hugo --minify --baseURL %s", cfg.BaseURL)
 cmd := fmt.Sprintf("hugo --minify --baseURL %q", cfg.BaseURL)
 ```
 
-Better still: avoid shelling out when stdlib will do the job. See @~/.claude/docs/CODING.md "Cross-Language Escaping" for the general rule, and the Hetzner DNS rewrite (pure-Go `net/http` + `encoding/json` replacing bash+curl+awk+jq) as the canonical example of the migration this enables.
+Better still: avoid shelling out when stdlib will do the job. See @{agent-home}/docs/CODING.md "Cross-Language Escaping" for the general rule, and the Hetzner DNS rewrite (pure-Go `net/http` + `encoding/json` replacing bash+curl+awk+jq) as the canonical example of the migration this enables.
 
 ## Function Decomposition
 
@@ -148,7 +148,7 @@ for _, tt := range tests {
 - Test files: `_test.go` suffix, alongside the code under test
 - `go test ./...` from the module root runs everything
 
-See @~/.claude/docs/TESTING.md for the cross-language testing standards.
+See @{agent-home}/docs/TESTING.md for the cross-language testing standards.
 
 ## Tooling
 

@@ -8,7 +8,7 @@ When invoked by the human, treat PROCEED as having been received for issue #n. R
 
 ## 1. Load standards
 
-Load `~/.claude/docs/CODING.md` and the relevant `~/.claude/docs/CODE/<language>.md` for the language(s) in use on this issue. Confirm in chat which loaded (the canary chain at the start of your next response should reflect them, e.g. `... CODE ... SHELL` for shell work).
+Load `{agent-home}/docs/CODING.md` and the relevant `{agent-home}/docs/CODE/<language>.md` for the language(s) in use on this issue. Confirm in chat which loaded (the canary chain at the start of your next response should reflect them, e.g. `... CODE ... SHELL` for shell work).
 
 ## 2. Write tests (TDD red)
 
@@ -33,7 +33,7 @@ Confirm tests pass.
 
 ## 4. Review
 
-Run the work described in `/review` for issue #n: `make test` (or skip with a stated reason if just run with no changes), hard-block check (zero errors, no new warnings), update the AC table on the issue in place, update project documentation including help text if executables changed, commit and push, add issue comment, write the review markdown to `./.claude/tmp/review-<n>.md`, render with `~/bin/pandhtml`, open the HTML.
+Run the work described in `/review` for issue #n: `make test` (or skip with a stated reason if just run with no changes), hard-block check (zero errors, no new warnings), update the AC table on the issue in place, update project documentation including help text if executables changed, commit and push, add issue comment, write the review markdown to `./.agent/tmp/review-<n>.md`, render with `~/bin/pandhtml`, open the HTML.
 
 ## 5. End-of-gate presentation (mandatory)
 

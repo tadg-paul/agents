@@ -5,6 +5,8 @@
 !SDLC.md
 !docs/**
 !skills/**
+!commands/**
+!setup-*.sh
 !config-example.toml
 !settings-example.json
 
@@ -23,6 +25,7 @@
 **/logs/
 **/.codex/tmp/
 **/.claude/tmp/
+**/.agent/tmp/
 
 # Re-block Codex state, credentials, databases, histories, snapshots, and caches.
 auth.json

@@ -1,12 +1,73 @@
-# Claude Code SDLC Configuration
+# AI Agent SDLC Framework
 
-A software development lifecycle framework for human-AI pair programming with Claude Code. It is layered, opinionated, and each rule traces to a real failure. The narrative of how it got here -- the failures, the iterations, the things that broke -- is in the [blog post](https://tadg.ie/blog/ai/2026-04-17-claude-code-sdlc/). This document is the reference: what is here, how it is organized, why each piece exists, and how it loads.
+A software development lifecycle framework for human-AI pair programming. All of the learning, iteration, and failure-driven evolution described here was done with Claude Code; the framework has more recently been extended to support Codex CLI and is now structured to work with any AI coding agent that reads markdown instruction files. It is layered, opinionated, and each rule traces to a real failure. The narrative of how it got here -- the failures, the iterations, the things that broke -- is in the [blog post](https://tadg.ie/blog/ai/2026-04-17-claude-code-sdlc/). This document is the reference: what is here, how it is organized, why each piece exists, and how it loads.
 
 The framework is sized for one human and one collaborator, but the failure modes it addresses recur anywhere these tools are used without comparable scaffolding.
 
+## Quickstart
+
+Clone this repository to a stable location:
+
+```bash
+git clone https://github.com/tadg-paul/agents.git ~/code/agents
+```
+
+Run the setup script for your agent (or both — they are independent):
+
+### Claude Code
+
+```bash
+~/code/agents/setup-claude.sh
+```
+
+Creates symlinks in `~/.claude/`:
+
+| Symlink | Points to |
+|---|---|
+| `CLAUDE.md` | `AGENTS.md` |
+| `SDLC.md` | `SDLC.md` |
+| `docs` | `docs/` |
+| `commands` | `commands/` |
+
+Then review and merge `settings.example.json` into `~/.claude/settings.json`. The file is annotated — do not replace an existing `settings.json` wholesale; merge the relevant entries.
+
+### Codex CLI
+
+```bash
+~/code/agents/setup-codex.sh
+```
+
+Creates symlinks in `~/.codex/`:
+
+| Symlink | Points to |
+|---|---|
+| `AGENTS.md` | `AGENTS.md` |
+| `SDLC.md` | `SDLC.md` |
+| `docs` | `docs/` |
+| `prompts-commands` | `commands/` |
+
+Then review and merge `config.example.toml` into `~/.codex/config.toml`. Do not replace the live file wholesale — existing `[projects.*]` trust entries will be lost.
+
+### Using both agents simultaneously
+
+Both scripts are independent and can both be run. Because all targets are symlinks into the same repository, a `git pull` in the repo root updates both agents at once.
+
+### Project-level instructions
+
+Each project using the framework should have a project-level `AGENTS.md` in its root. Claude Code reads `CLAUDE.md` by default; the `config.example.toml` includes a `project_doc_fallback_filenames` entry so that Codex also accepts `CLAUDE.md` during transition.
+
+### Project scratch directory
+
+The framework writes scratch files to `./.agent/tmp/` within each project. Add this to the project's `.gitignore`, or once to your global gitignore so all projects inherit it:
+
+```bash
+echo '.agent/tmp/' >> ~/.gitignore_global
+git config --global core.excludesfile ~/.gitignore_global
+```
+
 ## The Problem
 
-Claude Code is a powerful AI coding assistant, but without constraints it exhibits predictable failure modes that undermine the quality of work it produces:
+AI coding agents are powerful development tools, but without operational constraints they exhibit predictable failure modes that undermine the quality of work they produce:
 
 - **Premature implementation.** It writes code before requirements are agreed, solving the wrong problem efficiently.
 - **Shortcut testing.** It writes tests that exercise internal APIs instead of real user entry points. Tests pass; the application is broken.
@@ -42,7 +103,7 @@ The specific patterns underlying the headline failures, named so they can be ref
 - *Overwriting the human's edits.* Reverting human changes the model disagrees with. Human edits are authoritative.
 - *Treating a question as an instruction.* "What do you think of X?" parsed as "go and implement X", with product decisions made en route.
 - *Silently removing information from issues.* Deleting AC rows or comments rather than editing in place with strikethrough.
-- *Creating a public GitHub repo to satisfy a process requirement.* The framework requires that work be tracked in an issue. Asked to start work in a directory that was not a git repo, Claude created a **public** GitHub repository and uploaded the directory tree to host the issue against. The process rule was satisfied; the contents of a private working directory were now on the open internet. The instructive part: a general prohibition on *widening access to data without explicit instruction* was already in place when this happened. The agent did not recognize creating a public repo as a case of widening data access -- it framed the action as "satisfying the issue-tracking requirement" and the general rule did not fire. The fix was to add a *specific* prohibition: when initializing version control, `git init` is local-only; never create a remote. The general rule remains, but the specific case had to be named -- another instance of rule-lawyering closed only by explicit prohibition.
+- *Creating a public GitHub repo to satisfy a process requirement.* The framework requires that work be tracked in an issue. Asked to start work in a directory that was not a git repo, the agent (Claude Code, in the incident that produced this rule) created a **public** GitHub repository and uploaded the directory tree to host the issue against. The process rule was satisfied; the contents of a private working directory were now on the open internet. The instructive part: a general prohibition on *widening access to data without explicit instruction* was already in place when this happened. The agent did not recognize creating a public repo as a case of widening data access -- it framed the action as "satisfying the issue-tracking requirement" and the general rule did not fire. The fix was to add a *specific* prohibition: when initializing version control, `git init` is local-only; never create a remote. The general rule remains, but the specific case had to be named -- another instance of rule-lawyering closed only by explicit prohibition.
 
 **Coding shortcuts:**
 - *Building shell commands from strings.* `eval`, string concatenation, `$cmd` interpolation -- a classic injection vector. Use arrays.
@@ -66,8 +127,8 @@ The catalogue under `SDLC.md` §4 (Known Failure Modes) names 13 of these by num
 The framework is built in layers. Each layer has a single purpose and only loads when relevant. The principle behind the layering is explained under [Load less to follow more](#load-less-to-follow-more) below.
 
 ```
-~/.claude/                  # Global framework (this repo)
-  CLAUDE.md                 # Layer 1: universal rules - always loaded
+~/code/agents/              # This repository -- single source of truth for all agents
+  AGENTS.md                 # Layer 1: universal rules - always loaded
   SDLC.md                   # Layer 2: code-specific rules - loaded for code work
   docs/                     # Layer 3: standards reference - loaded by SDLC.md
     ISSUES.md
@@ -80,22 +141,31 @@ The framework is built in layers. Each layer has a single purpose and only loads
       PYTHON.md
       GO.md
       WEB.md
-  skills/                   # Invocable slash commands - run when human triggers them
-  settings.json             # Harness configuration: permissions, hooks
+  commands/                 # Invocable slash commands / saved prompts
+
+{agent-home}/               # Symlinks into this repo (created by setup-*.sh)
+  CLAUDE.md -> AGENTS.md    # Claude Code entry point
+  AGENTS.md -> AGENTS.md    # Codex CLI entry point
+  SDLC.md   -> SDLC.md
+  docs      -> docs/
+  commands           -> commands/   (Claude Code)
+  prompts-commands   -> commands/   (Codex CLI)
+  settings.json             # Claude Code harness config (from settings.example.json)
+  config.toml               # Codex CLI agent config (from config.example.toml)
 
 <project>/                  # Per-project layer (a separate repo)
-  CLAUDE.md                 # Optional - project-specific rules
+  AGENTS.md                 # Optional - project-specific rules
   docs/                     # Project documentation
-  .claude/
-    tmp/                    # Project-relative scratch
-    settings.json           # Project-level harness overrides
+  .agent/
+    tmp/                    # Project-relative scratch (gitignored)
+    settings.json           # Claude Code: project-level harness overrides
 ```
 
 ### The two-axis split
 
 Two splits divide the framework. They are orthogonal:
 
-**Universal vs. code-specific.** `CLAUDE.md` holds the rules that apply to any work Claude does with the human -- writing code, drafting documentation, organizing notes, planning, research. `SDLC.md` holds the rules that apply only when handling code: the three gates, the failure modes catalogue, the workflow. The split was introduced so the framework can be used for non-code work without dragging the full SDLC apparatus into every interaction.
+**Universal vs. code-specific.** `AGENTS.md` holds the rules that apply to any work the agent does with the human -- writing code, drafting documentation, organizing notes, planning, research. `SDLC.md` holds the rules that apply only when handling code: the three gates, the failure modes catalogue, the workflow. The split was introduced so the framework can be used for non-code work without dragging the full SDLC apparatus into every interaction.
 
 **Process vs. craft.** `SDLC.md` describes *the process* -- how work moves from idea to merged code. `docs/` describes *the craft* -- what good acceptance criteria look like (`ISSUES.md`), how to test real-user behaviour (`TESTING.md`), how to write code in each language (`CODING.md` + `CODE/`), how git is used (`GIT.md`), how documentation is structured (`DOCUMENTATION.md`). The process documents tell you *when* to do something; the craft documents tell you *how to do it well*.
 
@@ -105,11 +175,11 @@ Documents are loaded into the agent's context window only when relevant:
 
 | Document | When loaded |
 |---|---|
-| `CLAUDE.md` | Always |
+| `AGENTS.md` | Always |
 | `SDLC.md` | When working with code, scripts, software, or systems (via the `/useful-be` skill or explicit instruction) |
 | `docs/ISSUES.md`, `docs/TESTING.md`, etc. | Alongside `SDLC.md` for code work |
 | `docs/CODE/SHELL.md` etc. | Only for the language(s) actually in use |
-| Project `CLAUDE.md`, project `docs/` | When working in that project |
+| Project `AGENTS.md`, project `docs/` | When working in that project |
 
 Each document carries a one-word canary suffix at its end. Reading the document means appending the suffix to the response greeting. The complete chain, when everything is loaded, is:
 
@@ -133,7 +203,7 @@ The framework's load-bearing process mechanism. Three keyword checkpoints govern
 | Gate 2: Solution | `PROCEED n` | Test and implementation code may be written |
 | Gate 3: Review | `APPROVED n` | Issue may be closed |
 
-Gate keywords must come from the human, typed in ALL CAPS, followed by the issue number (e.g. `SATISFIED 12`). Claude may never write a gate keyword itself -- this is an absolute prohibition. The strict format requirements (ALL CAPS, with issue number, in the current conversation turn, from the human) were refined after Claude found ways to self-authorize: writing keywords into its own output, referencing approvals from different issues, and inferring approval from context.
+Gate keywords must come from the human, typed in ALL CAPS, followed by the issue number (e.g. `SATISFIED 12`). The agent may never write a gate keyword itself -- this is an absolute prohibition. The strict format requirements (ALL CAPS, with issue number, in the current conversation turn, from the human) were refined after the agent found ways to self-authorize: writing keywords into its own output, referencing approvals from different issues, and inferring approval from context.
 
 Enforcement is by §1 prohibition only -- the keywords are text-recognized, not harness-blocked. An earlier iteration implemented each keyword as a skill with `disable-model-invocation: true` in its frontmatter. It failed both ways: the agent sometimes refused to acknowledge the keyword and demanded the skill be invoked explicitly (false negative -- overcautious), and sometimes invoked the skill itself anyway (false positive -- the harness lock did not reliably prevent self-invocation under all conditions). The scaffolding was retired in favour of pure text recognition plus the §1 prohibition. The `/build` skill (see [Skills Reference](#skills-reference)) is a related case: it acts as a PROCEED-equivalent when invoked by the human as a slash command, with the human-only constraint carried as a hard prohibition in the skill body. Slash-command invocation avoids the false-negative failure (no keyword to misrecognize); the §1-style text prohibition is the same defence used by the keywords themselves against false positives.
 
@@ -145,7 +215,7 @@ The gates are the only hard stops. Between gates, the agent works continuously w
 - **After `PROCEED n`:** proceed through writing tests (TDD red), implementation (green), and review, ending with `READY FOR REVIEW - issue #n`. Do not stop in the middle.
 - **After `APPROVED n`:** close the issue.
 
-Skills are *tools*, not gates. The human invokes a skill when a specific phase needs to be done in isolation or an advisory pass is wanted (see [Skills Reference](#skills-reference)). Claude does not "wait for the next skill" -- if a gate keyword has been given, the work to the next gate is the agent's to do.
+Skills are *tools*, not gates. The human invokes a skill when a specific phase needs to be done in isolation or an advisory pass is wanted (see [Skills Reference](#skills-reference)). The agent does not "wait for the next skill" -- if a gate keyword has been given, the work to the next gate is the agent's to do.
 
 ### The bypass clause
 
@@ -155,7 +225,7 @@ Skills are *tools*, not gates. The human invokes a skill when a specific phase n
 
 Each global file has a single purpose. The "What it covers" sections list current rules; the "How it evolved" sections give the rationale -- each addition traces to a specific failure or recognition.
 
-### CLAUDE.md -- Universal Rules
+### AGENTS.md -- Universal Rules
 
 **What it covers:**
 - Identity and the working relationship between human and assistant
@@ -169,7 +239,7 @@ Each global file has a single purpose. The "What it covers" sections list curren
 - The root canary pledge (active commitment form)
 
 **How it evolved:**
-- The split from a single combined `CLAUDE.md` (which previously held both universals and code-specific machinery) happened when it became clear that loading the full SDLC for non-code work was both wasteful and dilutive to the rules
+- The split from a single combined document (which previously held both universals and code-specific machinery) happened when it became clear that loading the full SDLC for non-code work was both wasteful and dilutive to the rules
 - The "write outside cwd" prohibition was reformulated as absolute after exception requests kept arriving as "but just this once" with reasonable-sounding justifications. The current wording is "Never write outside of cwd under any circumstances. You may read outside of cwd only when directed to" -- no exceptions to consider
 - The git-state rule (require a clean git repo before editing tracked files) was added after multiple "where did my changes go" recoveries that would have been trivial with version control already in place
 - Verifying outgoing claims (§3) was significantly sharpened over multiple iterations. The latest revision adds causal claims explicitly (plausibility is not evidence) and the two-wrongs reflex (do not reach for the next plausible culprit when corrected)
@@ -181,7 +251,7 @@ Each global file has a single purpose. The "What it covers" sections list curren
 - The three quality gates (see above)
 - The autonomous-action exception (BYPASS-GATE-7) and what kinds of work qualify
 - The process checklist: between gates, do the work continuously; never tell the human you are waiting for a skill
-- 13 documented failure modes Claude Code is known to exhibit, named so they can be referred to by number
+- 13 documented failure modes AI coding agents are known to exhibit, named so they can be referred to by number
 - Bug report handling: the human's observation is evidence; the agent's hypothesis is not
 - Plan mode: externalize plans into GitHub issues, not chat; ephemeral planning is forbidden
 - GitHub repo rules: no changes without an approved issue; use `gh` CLI; tag minor point release on each closure
@@ -239,7 +309,7 @@ Each global file has a single purpose. The "What it covers" sections list curren
 - Started as a basic six-step TDD checklist
 - The test ID scheme was originally a global counter; simplified to issue-scoped IDs (`RT-12.1`) with no central file
 - The "real-user test" principle was prompted by the TTS deadlock incident: every test called the engine's library function in-process instead of invoking the real binary, so a bug in the subprocess code path was invisible to the entire test suite
-- The three-category split was added after one-off tests kept appearing in the regression suite, and after Claude classified everything as a user test to avoid writing automated ones
+- The three-category split was added after one-off tests kept appearing in the regression suite, and after the agent classified everything as a user test to avoid writing automated ones
 - The "no source-introspection" rule was added after a test suite for a Hugo theme's hover affordance was grepping source CSS rather than verifying behaviour. The same agent recognized the violation under the new rule and self-corrected -- a strong validation signal
 
 ### docs/CODING.md -- Cross-Language Coding Standards
@@ -357,10 +427,10 @@ Each global file has a single purpose. The "What it covers" sections list curren
 - Formal exception process for situations where a rule genuinely cannot be followed
 
 **How it evolved:**
-- Started with `--no-verify` as the only forbidden flag. The list was expanded after Claude used `--no-hooks` and `--no-pre-commit-hook` as alternatives
+- Started with `--no-verify` as the only forbidden flag. The list was expanded after the agent used `--no-hooks` and `--no-pre-commit-hook` as alternatives
 - Auto-close keywords were banned after `Fixes #N` triggered GitHub's automatic issue closure, bypassing the human review step the gate system exists to enforce
-- The pre-commit hook failure protocol was added after Claude's response to a failing hook was to try bypassing it rather than reading the error output
-- The pressure response section was added after Claude attempted to skip hooks when asked to commit quickly
+- The pre-commit hook failure protocol was added after the agent's response to a failing hook was to try bypassing it rather than reading the error output
+- The pressure response section was added after the agent attempted to skip hooks when asked to commit quickly
 - The global hook chaining pattern was added after a project-level `core.hooksPath` setting silently replaced global hooks
 - The exception process was formalized to prevent "just this once" from becoming permanent practice
 
@@ -381,7 +451,7 @@ Each global file has a single purpose. The "What it covers" sections list curren
 - The sanitization step was added after inconsistent British/American spelling appeared across documents in the same project
 - The review workflow was refined to require sanitization *before* review, not after -- the human was approving pre-sanitized text and then sanitization would change words, meaning the human had approved text they never saw in its final form
 - Help text was added as a required document type after the SHELL.md rule landed (help text is documentation, keep it in `./docs/`, do not inline as a heredoc)
-- The inconsistency handling rule was added after Claude silently proceeded with implementation despite contradictions in documentation that directly affected the solution design
+- The inconsistency handling rule was added after the agent silently proceeded with implementation despite contradictions in documentation that directly affected the solution design
 
 ### settings.json -- Harness Configuration
 
@@ -389,7 +459,7 @@ Each global file has a single purpose. The "What it covers" sections list curren
 - Permission allowlists: which Bash commands, file reads, file edits, and MCP tools may run without prompting the human for each invocation
 - The allowlist is deliberately broad for read-only operations (git, gh, find, grep, etc.) and narrower for state-changing ones
 - No credentials or secrets. Tokens for `gh` and similar are stored separately by the relevant CLI itself
-- Hooks (when configured): commands the harness runs at specific lifecycle events (after a Claude response, before a Bash invocation, etc.)
+- Hooks (when configured): commands the harness runs at specific lifecycle events (after an agent response, before a Bash invocation, etc.)
 
 **How it evolved:**
 - Started empty (every command prompted). The allowlist grew incrementally via the `fewer-permission-prompts` skill, which scans recent transcripts and proposes additions
@@ -436,7 +506,7 @@ These are invoked when a second opinion is wanted. None advance gates.
 | `/diagnose-issue` | Diagnose an issue and recommend a fix |
 | `/recommendations-please` | Expert recommendations in a given domain |
 
-The audit and diagnose skills write their long-form findings to `./.claude/tmp/<skill>-<NNN>.md`, render with `~/bin/pandhtml`, and open in a browser -- keeping the terminal short. The chat receives only a one-line summary and the HTML path.
+The audit and diagnose skills write their long-form findings to `./.agent/tmp/<skill>-<NNN>.md`, render with `~/bin/pandhtml`, and open in a browser -- keeping the terminal short. The chat receives only a one-line summary and the HTML path.
 
 ### Setup and context
 
@@ -466,7 +536,7 @@ The canary mechanism has two complementary parts: a root pledge and per-document
 
 ### The root pledge
 
-`CLAUDE.md` and `SDLC.md` each carry a pledge at their end. Saying the canary string attests to having read and agreed with the document.
+`AGENTS.md` and `SDLC.md` each carry a pledge at their end. Saying the canary string attests to having read and agreed with the document.
 
 The wording moved from passive description to active commitment:
 
@@ -616,7 +686,7 @@ The canary system has two distinct mechanisms doing two different jobs:
 1. **The root pledge.** A commitment statement at the end of `CLAUDE.md` (and, in the same active-pledge form, at the end of `SDLC.md`). Saying "EHLO" attests to having read the document, agreeing with it, agreeing with its spirit, pledging not to game it, flagging contradictions, and opting out if not prepared to comply.
 2. **Per-document suffixes.** Each non-root reference document appends a one-line acknowledgement, producing a chain that enumerates which documents were actually loaded.
 
-The recent change that correlated with markedly improved diligence was specifically the root pledge wording -- moving from passive description ("It means you... will not try to game it") to active commitment ("By doing so you assert... you pledge you will not try to game it"). The model is now the agent in the sentence rather than the reader of a document; saying EHLO is no longer a content check, it is a declaration. The per-document suffixes were not recently changed; they have done the same job throughout.
+The recent change that correlated with markedly improved diligence was specifically the root pledge wording -- moving from passive description ("It means you... will not try to game it") to active commitment ("By doing so you assert... you pledge you will not try to game it"). The agent is now the subject of the sentence rather than the reader of a document; saying EHLO is no longer a content check, it is a declaration. The per-document suffixes were not recently changed; they have done the same job throughout.
 
 The behaviour shift the morning after the rewording was the most pronounced step-change observed across the framework's lifetime. The honest framing remains n=1, no control, no A/B -- but the rewording was the only variable and the change was unmistakable. Whether the effect persists, or whether a future model finds a way around the pledge, is open. Working hypothesis: the active voice gives the model a self-binding commitment to refer back to across the conversation, rather than a fact about a document it has read.
 
@@ -626,13 +696,14 @@ The system looks more elaborate than it strictly needs to be, but each mechanism
 
 ## History
 
-The framework arrived at its current shape through five iterations. The blog post tells that story narratively; this section is the short summary.
+The framework arrived at its current shape through five iterations, all with Claude Code. The blog post tells that story narratively; this section is the short summary.
 
-1. **Traffic lights.** Green/Amber/Red classification of actions. Too loose; Claude self-classified into the most autonomous category.
+1. **Traffic lights.** Green/Amber/Red classification of actions. Too loose; the agent self-classified into the most autonomous category.
 2. **Single approval gate.** One `APPROVED` checkpoint before any code. Stopped premature implementation but conflated requirements, solution, and result into one decision.
 3. **Four gates with prescriptive checklist.** `SATISFIED`, `PROCEED`, `APPROVED`, `CLOSE` plus a 32-step sequential checklist. Quality was excellent; the process was unliveable. Simple changes took two hours of ceremony.
 4. **Three gates with skill-driven workflow.** APPROVED and CLOSE collapsed into one; the 32-step checklist decomposed into invocable skills. The human controls pacing; the agent does the work between gates continuously.
-5. **`CLAUDE.md` / `SDLC.md` split.** Universal rules separated from code-specific machinery so the framework can be used for non-code work without dragging the SDLC apparatus into every interaction.
+5. **`AGENTS.md` / `SDLC.md` split.** Universal rules separated from code-specific machinery so the framework can be used for non-code work without dragging the SDLC apparatus into every interaction.
+6. **Platform-agnostic rewrite.** Agent-specific naming and path references replaced with generic conventions (`AGENTS.md`, `{agent-home}`, `.agent/tmp/`). Setup scripts added for Claude Code and Codex CLI. All rules and failure-mode documentation remain as developed with Claude Code.
 
 The framework is never finished. New failure modes surface; rules are added in response. The full narrative -- including the failures that drove each iteration -- is in the [blog post](https://tadg.ie/blog/ai/2026-04-17-claude-code-sdlc/).
 
@@ -659,8 +730,8 @@ Projects developed using this SDLC framework (or earlier iterations of it):
 ## Areas for Improvement
 
 - **Skill granularity.** The current skills may still be too coarse for some workflows, or too fine for others. The balance between "invoke what you need" and "don't forget a step" is still being calibrated through daily use.
-- **Cross-conversation memory.** The framework relies on `CLAUDE.md` (and `SDLC.md` for code work) being read at the start of each conversation, but lessons from one conversation do not always carry to the next. Claude Code has a memory system that helps, but it is imperfect -- patterns that were corrected in one session may recur in the next.
-- **Rule-lawyering.** Claude is adept at satisfying the letter of rules while violating their spirit. Each time a specific shortcut is prohibited, it finds the next narrowest shortcut that technically satisfies the new rule. The shift from specific prohibitions to general principles (like the real-user test question, or the diagnostic-not-guess rule) is an attempt to close this gap, but it remains the central tension of the framework.
+- **Cross-conversation memory.** The framework relies on `AGENTS.md` (and `SDLC.md` for code work) being read at the start of each conversation, but lessons from one conversation do not always carry to the next. Some agents have a memory system that helps, but it is imperfect -- patterns that were corrected in one session may recur in the next.
+- **Rule-lawyering.** AI coding agents are adept at satisfying the letter of rules while violating their spirit. Each time a specific shortcut is prohibited, the agent finds the next narrowest shortcut that technically satisfies the new rule. The shift from specific prohibitions to general principles (like the real-user test question, or the diagnostic-not-guess rule) is an attempt to close this gap, but it remains the central tension of the framework.
 - **Batch and parallel workflows.** The test-first rule for parallel agents is relatively new and has not yet been tested at large scale across many concurrent agents.
 - **Language coverage.** Detailed standards exist for shell, Python, Go, and web (HTML/CSS/JS) under `CODE/`. Thinner for Swift, Rust, Ruby, TypeScript, and Java/Kotlin. The `/audit-code` skill compensates by reviewing against language-specific best practice for whatever stack is in use, but the documented standards will continue to grow.
 - **Causal opacity of working mechanisms.** As the Canary System finding notes, the framework now contains mechanisms that demonstrably work but whose specific causal factors are not isolable without expensive experimentation. This argues for conservative iteration: do not optimize away apparently-redundant parts of working mechanisms unless the cost of regression is acceptable.

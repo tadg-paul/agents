@@ -1,6 +1,6 @@
 # Testing Standards
 
-This document defines how to write, structure, and organize tests. The TDD workflow sequence - when to enumerate, when to write tests, when to run regression - is in CLAUDE.md §3.
+This document defines how to write, structure, and organize tests. The TDD workflow sequence - when to enumerate, when to write tests, when to run regression - is in SDLC.md §3.
 
 ## The real-user test
 

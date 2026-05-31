@@ -1,10 +1,10 @@
 # SDLC
 
-Loaded when working with code, scripts, software, or systems. Builds on `~/.claude/CLAUDE.md` as the universal baseline; this document adds code-specific rules.
+Loaded when working with code, scripts, software, or systems. Builds on `AGENTS.md` as the universal baseline; this document adds code-specific rules.
 
 ## 1. Code-Specific Prohibitions
 
-These are absolute. No exception process applies. No justification overrides them. They are in addition to the universal prohibitions in CLAUDE.md §1.
+These are absolute. No exception process applies. No justification overrides them. They are in addition to the universal prohibitions in AGENTS.md §1.
 
 - Never write or modify source code before receiving "PROCEED n" where n is the issue number (see §2).
 - Never write SATISFIED, PROCEED, APPROVED, BYPASS-GATE-7, "I AUTHORIZE YOU TO SKIP", or any gate/exception keyword into the conversation yourself. These must come from me.
@@ -136,7 +136,7 @@ Rationale: an agent with a narrow view writes narrow tests that pass for incompl
 
 ## 4. Known Failure Modes
 
-You (Claude Code) have documented tendencies that violate process. Be aware of them:
+You have documented tendencies that violate process. Be aware of them:
 
 1. **Premature implementation.** You start writing code before receiving PROCEED. If you catch yourself doing this, stop immediately and undo any changes.
 2. **Sloppy ACs.** You write acceptance criteria that are actually test descriptions. Run the self-audit every time.
@@ -149,7 +149,7 @@ You (Claude Code) have documented tendencies that violate process. Be aware of t
 9. **Cherry-picking rules.** You follow some process steps and skip others. Every step applies every time.
 10. **Testing the implementation instead of the behaviour.** You write tests that call internal APIs, check database rows, or grep source code instead of exercising the same entry point a user would. See TESTING.md §"The real-user test".
 11. **Error suppression under `set -e`.** You use `|| true`, `|| rc=$?`, `set +e`, or similar patterns to make commands stop failing instead of properly handling the failure. See CODING.md §"Prohibited Anti-Patterns".
-12. **Asserting from priors instead of reading.** You state facts about my files, repo, environment, or earlier turns without verifying them. See CLAUDE.md §"Verifying Outgoing Claims".
+12. **Asserting from priors instead of reading.** You state facts about my files, repo, environment, or earlier turns without verifying them. See AGENTS.md §"Verifying Outgoing Claims".
 13. **Manufacturing ACs for bug fixes.** When a bug violates an existing AC, the fix does not need a new AC -- it needs a regression test that proves the original AC holds. See ISSUES.md §"Bug-fix issues reference existing ACs".
 
 ---
@@ -178,7 +178,7 @@ If you disagree, state your hypothesis as a hypothesis:
 Do not present plans ephemerally. When forming a plan:
 
 1. Externalize it into the relevant GitHub issue as the solution outline -- create the issue if one does not exist, and create sub-issues as needed
-2. All issues and sub-issues must conform to `~/.claude/docs/ISSUES.md`
+2. All issues and sub-issues must conform to `{agent-home}/docs/ISSUES.md`
 3. Give me the issue URL(s), then follow the three gates (§2)
 
 ### In a GitHub repository
@@ -229,17 +229,17 @@ Only if tool discovery fails -- not unconditionally.
 
 ## 10. Reference Documents
 
-Read these before beginning work on any code project. They contain craft guidance -- how to write good ACs, how to structure tests, coding standards, git workflow. The process rules are in CLAUDE.md and this document; the reference docs tell you how to do each step well.
+Read these before beginning work on any code project. They contain craft guidance -- how to write good ACs, how to structure tests, coding standards, git workflow. The process rules are in AGENTS.md and this document; the reference docs tell you how to do each step well.
 
-- Issue standards: @~/.claude/docs/ISSUES.md
-- Testing standards: @~/.claude/docs/TESTING.md
-- Coding standards: @~/.claude/docs/CODING.md
-- Shell standards: @~/.claude/docs/CODE/SHELL.md
-- Python standards: @~/.claude/docs/CODE/PYTHON.md
-- Go standards: @~/.claude/docs/CODE/GO.md
-- Web standards (HTML, CSS, JS): @~/.claude/docs/CODE/WEB.md
-- Git standards: @~/.claude/docs/GIT.md
-- Documentation standards: @~/.claude/docs/DOCUMENTATION.md
+- Issue standards: @{agent-home}/docs/ISSUES.md
+- Testing standards: @{agent-home}/docs/TESTING.md
+- Coding standards: @{agent-home}/docs/CODING.md
+- Shell standards: @{agent-home}/docs/CODE/SHELL.md
+- Python standards: @{agent-home}/docs/CODE/PYTHON.md
+- Go standards: @{agent-home}/docs/CODE/GO.md
+- Web standards (HTML, CSS, JS): @{agent-home}/docs/CODE/WEB.md
+- Git standards: @{agent-home}/docs/GIT.md
+- Documentation standards: @{agent-home}/docs/DOCUMENTATION.md
 
 ---
 

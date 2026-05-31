@@ -12,7 +12,7 @@ These are prohibited:
 - `--no-verify`
 - `--no-hooks`
 - `--no-pre-commit-hook`
-- NEVER state "Co-authoried by Claude" or any AI
+- NEVER include AI attribution in commits or attribution lines (e.g. "Co-authored-by Claude" or equivalent)
 
 Before using any unfamiliar git flag: state it, explain why, confirm it's not forbidden, get permission for any bypass.
 
@@ -118,7 +118,7 @@ Pressure is never justification for bypassing checks.
 Before any git command, ask:
 
 - Am I bypassing a safety mechanism?
-- Would this violate CLAUDE.md?
+- Would this violate AGENTS.md?
 - Am I choosing convenience over quality?
 
 If any answer is "yes" or "maybe", explain the concern first.

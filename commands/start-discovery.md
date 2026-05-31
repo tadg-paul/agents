@@ -2,9 +2,9 @@
 description: Open a discovery (sketch) session for exploratory or UX work. Opens an issue tagged `discovery` with `[DISCOVERY]` title prefix and NO AC table. Sketches only. See ISSUES.md §"Discovery issues".
 ---
 
-Open a discovery session for the current task. Read and follow @~/.claude/docs/ISSUES.md §"Discovery issues".
+Open a discovery session for the current task. Read and follow @{agent-home}/docs/ISSUES.md §"Discovery issues".
 
-**This skill is user-invoked only.** Per CLAUDE.md §1, you may never invoke `/start-discovery` on your own initiative. If you find yourself reaching for it, stop and surface the suggestion in chat instead.
+**This skill is user-invoked only.** Per AGENTS.md §1, you may never invoke `/start-discovery` on your own initiative. If you find yourself reaching for it, stop and surface the suggestion in chat instead.
 
 **What discovery is for:** open-ended exploratory work where the spec is not yet known - UX sketching, "I'll know it when I see it" design, prototyping competing approaches. Not for small clearly-scoped tasks (that is what BYPASS-GATE-7 is for) and not for ordinary feature work (that is `/draft-issue`).
 

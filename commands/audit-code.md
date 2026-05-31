@@ -12,6 +12,6 @@ Review the implementation code for the current issue. Do not modify any files.
 
 4. **Complexity.** Flag functions over 50 lines, nesting deeper than 3 levels, god objects, duplicated code.
 
-5. **Summarize.** Write the full findings to `./.claude/tmp/audit-code-<NNN>.md` (project-relative scratch): each finding with file paths and line numbers, categorized as blockers (must fix) or smells (worth discussing), with a specific recommended fix for each. Render and open: `~/bin/pandhtml ./.claude/tmp/audit-code-<NNN>.md` (produces `./.claude/tmp/audit-code-<NNN>.html`), then `open ./.claude/tmp/audit-code-<NNN>.html`. **In chat: one line stating blocker count, smell count, and the HTML path.**
+5. **Summarize.** Write the full findings to `./.agent/tmp/audit-code-<NNN>.md` (project-relative scratch): each finding with file paths and line numbers, categorized as blockers (must fix) or smells (worth discussing), with a specific recommended fix for each. Render and open: `~/bin/pandhtml ./.agent/tmp/audit-code-<NNN>.md` (produces `./.agent/tmp/audit-code-<NNN>.html`), then `open ./.agent/tmp/audit-code-<NNN>.html`. **In chat: one line stating blocker count, smell count, and the HTML path.**
 
 Do not proceed past this audit. Wait for my response.

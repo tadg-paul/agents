@@ -2,11 +2,11 @@
 description: Draft a bug-fix issue that references existing ACs. No new AC table is created. See ISSUES.md §"Bug-fix issues reference existing ACs".
 ---
 
-Draft a bug-fix issue for the current task. Read and follow @~/.claude/docs/ISSUES.md - in particular the §"Bug-fix issues reference existing ACs" section.
+Draft a bug-fix issue for the current task. Read and follow @{agent-home}/docs/ISSUES.md - in particular the §"Bug-fix issues reference existing ACs" section.
 
 **Critical rule:** a bug-fix issue does **not** contain its own AC table. It references the AC(s) the bug violates, by ID, from the central document `./docs/ACs.md` (or the originating issue if not yet migrated).
 
-1. Identify the bug. Reproduce or confirm reproduction. Treat the user's report as authoritative (CLAUDE.md §6).
+1. Identify the bug. Reproduce or confirm reproduction. Treat the user's report as authoritative (AGENTS.md §6).
 2. **Locate the violated AC.** Search `./docs/ACs.md` first, then closed issues if needed.
    - If found in `./docs/ACs.md`: cite as `AC{n}.{m}` with a link.
    - If found in a legacy issue (not yet migrated): cite as `AC{n}.{m} (legacy - see #N)`. Consider whether to migrate it first via `/migrate-acs N` - migrate when the AC is load-bearing and likely to be cited again.

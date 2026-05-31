@@ -1,18 +1,18 @@
 # Web Standards
 
-Standards for HTML, CSS, JavaScript, and the testing/tooling concerns that span them. The general coding standards in @~/.claude/docs/CODING.md apply on top of these.
+Standards for HTML, CSS, JavaScript, and the testing/tooling concerns that span them. The general coding standards in @{agent-home}/docs/CODING.md apply on top of these.
 
-When a Go application serves HTML, CSS, or JavaScript, the server-side patterns in @~/.claude/docs/CODE/GO.md (HTTP server, error handling, timeouts) apply for the server; the standards in this document apply for the response payload.
+When a Go application serves HTML, CSS, or JavaScript, the server-side patterns in @{agent-home}/docs/CODE/GO.md (HTTP server, error handling, timeouts) apply for the server; the standards in this document apply for the response payload.
 
 ## Source vs Rendered Tier Model
 
 Web content moves through three tiers between authoring and the user:
 
-1. **Source** -- templates, partials, source CSS/JS files. Source code. Tests must not introspect it (see @~/.claude/docs/TESTING.md).
+1. **Source** -- templates, partials, source CSS/JS files. Source code. Tests must not introspect it (see @{agent-home}/docs/TESTING.md).
 2. **Rendered/built** -- post-build HTML, fingerprinted CSS bundle, transpiled JS. The artefact that travels over the wire. **Tests may query this tier** with format-aware tools (htmlq) -- the user's browser receives this exact content.
 3. **Presented** -- post-JS-execution DOM, computed styles, visual layout. What the user actually sees. Requires a browser (Playwright/Cypress) or a human (UT) to verify.
 
-The source-introspection prohibition in @~/.claude/docs/TESTING.md applies to tier 1. Tiers 2 and 3 are legitimate test targets. For mostly-static sites (Hugo), tier 2 is usually sufficient. For JS-heavy SPAs where meaningful content materializes only after browser execution, tier 2 is insufficient -- defer to tier 3.
+The source-introspection prohibition in @{agent-home}/docs/TESTING.md applies to tier 1. Tiers 2 and 3 are legitimate test targets. For mostly-static sites (Hugo), tier 2 is usually sufficient. For JS-heavy SPAs where meaningful content materializes only after browser execution, tier 2 is insufficient -- defer to tier 3.
 
 ## HTML
 
@@ -56,7 +56,7 @@ This is the JS minimum. When the stack grows substantive TypeScript work, factor
 - **No global pollution.** Modules export and import; don't attach to `window`.
 - **No `var`.** `const` by default, `let` only if mutation is necessary.
 - **Strict null/undefined handling.** Optional chaining (`?.`) and nullish coalescing (`??`) where they improve clarity.
-- **Lint:** ESLint with Airbnb base or project standard. Format with Prettier. See Style Baselines table in @~/.claude/docs/CODING.md.
+- **Lint:** ESLint with Airbnb base or project standard. Format with Prettier. See Style Baselines table in @{agent-home}/docs/CODING.md.
 
 ## Build and Test Tooling
 
@@ -73,7 +73,7 @@ For tests that genuinely require a browser (computed styles, hover behaviour, JS
 
 ## Testing Web Content
 
-Cross-cutting with @~/.claude/docs/TESTING.md. This section contextualizes those rules for web content; it does not override them.
+Cross-cutting with @{agent-home}/docs/TESTING.md. This section contextualizes those rules for web content; it does not override them.
 
 Decision tree by tier:
 
@@ -83,7 +83,7 @@ Decision tree by tier:
 | Computed style, hover, JS-rendered content | **UT** (default) or **RT with headless browser** | UT until tooling cost is justified; then Playwright/Cypress. |
 | Visual judgement (typography, "looks right", layout aesthetics) | **UT** only | Machine cannot replace human visual judgement here. |
 
-Per @~/.claude/docs/TESTING.md, the real-user test question still applies: *what user action does this test simulate, and what would the user observe?* For tier-1 HTML the answer is "the user loads this URL and the browser receives this exact HTML" -- legitimate. For source-template grep the answer is "nothing the user does" -- forbidden.
+Per @{agent-home}/docs/TESTING.md, the real-user test question still applies: *what user action does this test simulate, and what would the user observe?* For tier-1 HTML the answer is "the user loads this URL and the browser receives this exact HTML" -- legitimate. For source-template grep the answer is "nothing the user does" -- forbidden.
 
 ## Reference Standards
 
