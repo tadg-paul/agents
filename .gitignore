@@ -1,0 +1,116 @@
+# First block everything
+*
+*/**
+
+# Repo policy and documentation.
+!.gitignore
+!README.md
+!AGENTS*.md
+!SDLC.md
+!docs/**
+!skills/**
+!config-example.toml
+!settings-example.json
+
+# Re-block generated/local material everywhere, including inside allowed dirs.
+**/.DS_Store
+**/.venv/
+**/__pycache__/
+**/*.py[cod]
+**/.pytest_cache/
+**/.ruff_cache/
+**/node_modules/
+**/.cache/
+**/.tmp/
+**/tmp/
+**/log/
+**/logs/
+**/.codex/tmp/
+**/.claude/tmp/
+
+# Re-block Codex state, credentials, databases, histories, snapshots, and caches.
+auth.json
+config.toml
+history.jsonl
+installation_id
+models_cache.json
+version.json
+goals*.sqlite*
+logs*.sqlite*
+memories*.sqlite*
+state*.sqlite*
+sessions/
+cache/
+log/
+logs/
+shell_snapshots/
+tmp/
+.tmp/
+memories/
+rules/
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+*.db
+*.db-shm
+*.db-wal
+
+# Re-block secret-like files by pattern.
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+*.env
+.env
+.env.*
+
+# Allow explicit examples/templates, not real local env files.
+!*.example
+
+# additional claude files to ignore
+
+debug/
+todos/
+tasks/
+ide/
+plans/
+session-env/
+shell-snapshots/
+file-history/
+paste-cache/
+# Memory (auto-generated, conversation-specific)
+memory/
+# Per-project memory (auto-generated, machine-specific)
+projects/
+# Profiling artefacts
+default.profraw
+*.profraw
+# History (sensitive - contains conversation data)
+# Telemetry & analytics
+statsig/
+telemetry/
+stats-cache.json
+mcp-needs-auth-cache.json
+# Cache
+# Plugins (nested git repos)
+plugins/
+# Backups (auto-generated)
+backups/
+# Credentials & secrets
+credentials.json
+*.token
+auth/
+oauth/
+# Logs and cache
+*.log
+*.cache
+# OS cruft
+.DS_Store
+Thumbs.db
+# Temp files
+*.tmp
+*.swp
+*~
+# Project-relative scratch directory (see DOCUMENTATION.md §"Reviewing doc changes")
+
