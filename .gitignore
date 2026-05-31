@@ -1,7 +1,3 @@
-# First block everything
-*
-*/**
-
 # Repo policy and documentation.
 !.gitignore
 !README.md
@@ -113,4 +109,3 @@ Thumbs.db
 *.swp
 *~
 # Project-relative scratch directory (see DOCUMENTATION.md §"Reviewing doc changes")
-

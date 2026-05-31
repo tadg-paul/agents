@@ -1,0 +1,14 @@
+# Proposed additions for ~/.codex/config.toml.
+# Review and merge manually; this file is not live configuration.
+
+# Default is 32768 bytes. Raise the instruction-doc budget to leave room for
+# global AGENTS.md plus project-local instructions during migration.
+project_doc_max_bytes = 65536
+
+# Transitional fallback: let Codex read project-local CLAUDE.md files when a
+# project has not yet been migrated to AGENTS.md.
+project_doc_fallback_filenames = ["CLAUDE.md"]
+
+# Optional: retain your existing model/trust settings from ~/.codex/config.toml.
+# Do not replace the live file wholesale unless you intentionally migrate all
+# existing [projects.*] trust entries too.
