@@ -20,16 +20,19 @@ Run the setup script for your agent (or both — they are independent):
 ~/code/agents/setup-claude.sh
 ```
 
-Creates symlinks in `~/.claude/`:
+Creates managed paths in `~/.claude/`:
 
-| Symlink | Points to |
+| Path | Source |
 |---|---|
-| `CLAUDE.md` | `AGENTS.md` |
-| `SDLC.md` | `SDLC.md` |
-| `docs` | `docs/` |
-| `commands` | `commands/` |
+| `CLAUDE.md` | symlink to `AGENTS.md` |
+| `SDLC.md` | symlink to `SDLC.md` |
+| `docs` | symlink to `docs/` |
+| `commands` | symlink to `commands/` |
+| `.gitignore` | copied from `.gitignore` |
 
 Then review and merge `settings.example.json` into `~/.claude/settings.json`. The file is annotated — do not replace an existing `settings.json` wholesale; merge the relevant entries.
+
+Claude Code reads `~/.claude/commands/` as custom slash commands, so the SDLC command files are directly invocable there (for example `/draft-issue`, `/build`, `/review`).
 
 ### Codex CLI
 
@@ -37,16 +40,21 @@ Then review and merge `settings.example.json` into `~/.claude/settings.json`. Th
 ~/code/agents/setup-codex.sh
 ```
 
-Creates symlinks in `~/.codex/`:
+Creates managed paths in `~/.codex/`:
 
-| Symlink | Points to |
+| Path | Source |
 |---|---|
-| `AGENTS.md` | `AGENTS.md` |
-| `SDLC.md` | `SDLC.md` |
-| `docs` | `docs/` |
-| `prompts-commands` | `commands/` |
+| `AGENTS.md` | symlink to `AGENTS.md` |
+| `SDLC.md` | symlink to `SDLC.md` |
+| `docs` | symlink to `docs/` |
+| `prompts-commands` | symlink to `commands/` |
+| `.gitignore` | copied from `.gitignore` |
 
 Then review and merge `config.example.toml` into `~/.codex/config.toml`. Do not replace the live file wholesale — existing `[projects.*]` trust entries will be lost.
+
+Codex CLI support for these command files is limited. As verified against `codex-cli 0.137.0`, Codex does not currently expose a supported custom slash-command or saved-prompt loader that makes files in `~/.codex/prompts-commands/` invocable as `/draft-issue`, `/build`, etc. The symlink is installed as a prompt library and future-compatible location, not as a working Codex slash-command mechanism.
+
+The files are deliberately not installed as Codex skills. Skills can be selected or triggered by Codex based on name and description, but SDLC commands such as `/build` are authorization acts: they must only run when the human explicitly invokes that exact workflow. Shelling a prompt into `codex exec` is possible, but it starts a non-interactive exec run rather than continuing the active TUI conversation, so it is not equivalent to the Claude Code slash-command workflow.
 
 ### Using both agents simultaneously
 
@@ -141,7 +149,7 @@ The framework is built in layers. Each layer has a single purpose and only loads
       PYTHON.md
       GO.md
       WEB.md
-  commands/                 # Invocable slash commands / saved prompts
+  commands/                 # Claude Code slash commands; Codex prompt library
 
 {agent-home}/               # Symlinks into this repo (created by setup-*.sh)
   CLAUDE.md -> AGENTS.md    # Claude Code entry point
@@ -149,7 +157,8 @@ The framework is built in layers. Each layer has a single purpose and only loads
   SDLC.md   -> SDLC.md
   docs      -> docs/
   commands           -> commands/   (Claude Code)
-  prompts-commands   -> commands/   (Codex CLI)
+  prompts-commands   -> commands/   (Codex CLI prompt library; not active slash commands in codex-cli 0.137.0)
+  .gitignore                 # Copied drop-in allowlist for the agent home
   settings.json             # Claude Code harness config (from settings.example.json)
   config.toml               # Codex CLI agent config (from config.example.toml)
 
