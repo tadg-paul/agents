@@ -5,14 +5,6 @@ set -euo pipefail
 REPO="$(cd "$(dirname "$0")" && pwd)"
 TARGET="${HOME}/.codex"
 
-managed_targets=(
-    "$TARGET/AGENTS.md"
-    "$TARGET/SDLC.md"
-    "$TARGET/docs"
-    "$TARGET/prompts-commands"
-    "$TARGET/.gitignore"
-)
-
 move_to_backup() {
     local target="$1"
     local backup="${target}.bak"
@@ -28,22 +20,89 @@ move_to_backup() {
     mv "$target" "$backup"
 }
 
-prepare_target() {
+confirm_replace() {
     local target="$1"
+    local reply
+
+    printf 'Warning: %s exists and is not a symlink.\n' "$target"
+    printf 'It will be moved to %s.bak before replacement.\n' "$target"
+    if ! read -r -p 'Continue? (y/N) ' reply; then
+        reply=
+    fi
+
+    case "$reply" in
+        [Yy] | [Yy][Ee][Ss])
+            return 0
+            ;;
+        *)
+            printf 'Skipping %s\n' "$target"
+            return 1
+            ;;
+    esac
+}
+
+same_path() {
+    local source="$1"
+    local target="$2"
+
+    [[ -L "$target" && "$(readlink "$target")" == "$source" ]]
+}
+
+same_file() {
+    local source="$1"
+    local target="$2"
+
+    [[ -f "$target" ]] && cmp -s "$source" "$target"
+}
+
+same_tree() {
+    local source="$1"
+    local target="$2"
+
+    [[ -d "$target" ]] && diff -qr "$source" "$target" >/dev/null
+}
+
+prepare_target() {
+    local source="$1"
+    local target="$2"
+    local kind="$3"
+
+    if [[ "$kind" == symlink ]] && same_path "$source" "$target"; then
+        printf 'Already current: %s\n' "$target"
+        return 1
+    fi
+
+    if [[ ! -L "$target" && "$kind" == copy ]] && same_file "$source" "$target"; then
+        printf 'Already current: %s\n' "$target"
+        return 1
+    fi
+
+    if [[ ! -L "$target" && "$kind" == symlink && -f "$source" ]] && same_file "$source" "$target"; then
+        printf 'Already current: %s\n' "$target"
+        return 1
+    fi
+
+    if [[ ! -L "$target" && "$kind" == symlink && -d "$source" ]] && same_tree "$source" "$target"; then
+        printf 'Already current: %s\n' "$target"
+        return 1
+    fi
 
     if [[ -L "$target" ]]; then
         printf 'Removing existing symlink: %s\n' "$target"
         unlink "$target"
     elif [[ -e "$target" ]]; then
+        confirm_replace "$target" || return 1
         move_to_backup "$target"
     fi
+
+    return 0
 }
 
 install_symlink() {
     local source="$1"
     local target="$2"
 
-    prepare_target "$target"
+    prepare_target "$source" "$target" symlink || return 0
     ln -s "$source" "$target"
 }
 
@@ -51,24 +110,11 @@ install_copy() {
     local source="$1"
     local target="$2"
 
-    prepare_target "$target"
+    prepare_target "$source" "$target" copy || return 0
     cp "$source" "$target"
 }
 
 mkdir -p "$TARGET"
-
-existing_targets=()
-for target in "${managed_targets[@]}"; do
-    if [[ -e "$target" || -L "$target" ]]; then
-        existing_targets+=("$target")
-    fi
-done
-
-if ((${#existing_targets[@]} > 0)); then
-    printf 'Warning: existing managed paths in %s will be replaced:\n' "$TARGET"
-    printf '  %s\n' "${existing_targets[@]}"
-    printf 'Real files/directories will be moved to .bak; symlinks will be removed.\n\n'
-fi
 
 install_symlink "$REPO/AGENTS.md" "$TARGET/AGENTS.md"
 install_symlink "$REPO/SDLC.md" "$TARGET/SDLC.md"
