@@ -190,6 +190,11 @@ Do not present plans ephemerally. When forming a plan:
 - Each time an issue is successfully closed with all tests passing, tag a minor point release
 - If the issue involved one-off tests, confirm with me whether they should be deleted before tagging
 
+### Externally deployed projects
+
+For projects deployed outside the local machine, read and follow the infrastructure integration contract before designing or implementing deployment-related changes. Digest the readme The infrastructure project is `https://github.com/tadg-paul/exodan` and locally at `~/code/exodan`; start with the readme, then digest the referenced application/infrastructure contract.
+* TRUST the documented integration contract; REPORT **contract gaps** or **tooling mismatches** as infrastructure-side issues instead of compensating in the project repo.
+
 ### Homebrew projects
 
 - Follow Homebrew guidelines for formula and cask creation
