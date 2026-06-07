@@ -4,6 +4,14 @@ A software development lifecycle framework for human-AI pair programming. All of
 
 The framework is sized for one human and one collaborator, but the failure modes it addresses recur anywhere these tools are used without comparable scaffolding.
 
+## Platform-agnostic
+I am in the process of restructuring this repo to be platform-agnostic with the purpose of accommodating
+- Claude Code
+- Codex (OpenAI)
+- GitHub CLI
+- Gemini (Google)
+Currently there are some open questions and decisions to be made in order to best do this. In the meantime, so far this was originally written witih *Claude Code* as the primary use case, and now tested with *Codex*. There is an open issue in terms of restructure to better cater for all four platforms and comments are welcome.
+
 ## Quickstart
 
 Clone this repository to a stable location:
