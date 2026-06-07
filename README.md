@@ -4,13 +4,11 @@ A software development lifecycle framework for human-AI pair programming. All of
 
 The framework is sized for one human and one collaborator, but the failure modes it addresses recur anywhere these tools are used without comparable scaffolding.
 
-## Platform-agnostic
-I am in the process of restructuring this repo to be platform-agnostic with the purpose of accommodating
-- Claude Code
-- Codex (OpenAI)
-- GitHub CLI
-- Gemini (Google)
-Currently there are some open questions and decisions to be made in order to best do this. In the meantime, so far this was originally written witih *Claude Code* as the primary use case, and now tested with *Codex*. There is an open issue in terms of restructure to better cater for all four platforms and comments are welcome.
+## Platform-agnostic direction
+
+This repository is being restructured from a Claude Code-specific framework into a platform-agnostic SDLC distribution for AI coding agents. Claude Code remains the original and most mature target, Codex CLI support is now documented and tested, and the structure is intended to leave room for additional agent surfaces such as GitHub CLI and Gemini.
+
+The remaining design questions are tracked in [issue #2: Design platform-agnostic SDLC distribution across AI coding agents](https://github.com/tadg-paul/agents/issues/2). Comments there are welcome, especially on how much should be shared across agents versus adapted per platform.
 
 ## Quickstart
 
