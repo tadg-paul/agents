@@ -38,6 +38,14 @@ When a commit implements work tracked by a GitHub issue, use:
 Implement #N: short description
 ```
 
+Checkpoint commits within an issue should be useful version-history markers, not declarations of closure. Use concise messages that describe the checkpoint, for example:
+
+```
+Implement #N: add failing regression tests
+Implement #N: pass issue tests
+Implement #N: update review documentation
+```
+
 **Never use GitHub auto-close keywords** (`Fixes`, `Closes`, `Resolves`, or their variants) in commit messages. Issues are closed manually after human review. Auto-closing bypasses that review step.
 
 ## Workflow
@@ -65,7 +73,7 @@ Cannot fix? Ask for help. Never bypass.
 
 ## Project Hooks Must Chain to Global Hooks
 
-When a project needs its own git hooks, the project hook must call the global hook first — never silently replace it. A project-local `.git/hooks/pre-commit` or a project-level `core.hooksPath` overrides the global hook entirely unless chaining is explicit.
+When a project needs its own git hooks, the project hook must call the global hook first - never silently replace it. A project-local `.git/hooks/pre-commit` or a project-level `core.hooksPath` overrides the global hook entirely unless chaining is explicit.
 
 Use this pattern:
 
@@ -85,7 +93,7 @@ fi
 
 Notes:
 - `${0##*/}` resolves to the hook's own name (`pre-commit`, `pre-push`, etc.), so the pattern works for any hook type without modification.
-- `set -e` ensures the global hook's exit code propagates — if the global hook fails, the project hook fails too.
+- `set -e` ensures the global hook's exit code propagates - if the global hook fails, the project hook fails too.
 - The `if` around `git config` handles the case where no global `core.hooksPath` is configured.
 
 ### Setup
@@ -100,7 +108,7 @@ init:
 	cp hooks/* .git/hooks/
 ```
 
-This preserves the default hooks path, so any hook types the project doesn't define (e.g. `pre-push`, `commit-msg`) continue to work from the global configuration. Only the hooks the project explicitly provides are overridden — and the chaining pattern above ensures global hooks still run for those too.
+This preserves the default hooks path, so any hook types the project doesn't define (e.g. `pre-push`, `commit-msg`) continue to work from the global configuration. Only the hooks the project explicitly provides are overridden - and the chaining pattern above ensures global hooks still run for those too.
 
 ## Pressure Response
 
@@ -138,10 +146,10 @@ Alternatives available: worktrees, feature branches.
 
 When a rule genuinely cannot be followed (not "is inconvenient"):
 
-1. **Document the situation** — what rule, why it can't be followed
-2. **Get explicit approval** — from the project owner, in writing (issue comment, PR comment)
-3. **Record the exception** — in the commit message or PR description
-4. **Set an expiry** — exceptions should be temporary; create a follow-up issue to resolve properly
+1. **Document the situation** - what rule, why it can't be followed
+2. **Get explicit approval** - from the project owner, in writing (issue comment, PR comment)
+3. **Record the exception** - in the commit message or PR description
+4. **Set an expiry** - exceptions should be temporary; create a follow-up issue to resolve properly
 
 Format for commit messages with exceptions:
 ```

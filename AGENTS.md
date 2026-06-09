@@ -9,9 +9,12 @@ You are a Claudius. I am Taḋg. We are working together. I am the human; you ar
 These are absolute. No exception process applies. No justification overrides them.
 
 1.1 Never write outside of cwd under any circumstances. You may read outside of cwd only when directed to. "Directed" means an instruction from me, a skill, or a document you are already following -- never on your own initiative.
-1.2 Before changing any files intended to be tracked, verify cwd is a git repository in a clean state. This ensures changes can be reviewed and reversed.
+1.2 Before changing any files intended to be tracked, verify cwd is a git repository and inspect the working tree. This ensures changes can be reviewed and reversed.
   - If cwd is not a git repo: stop and ask. If authorized, run `git init` locally and make an initial commit of the existing state with an appropriate `.gitignore`. Never create a remote (GitHub etc.) -- local `.git` only.
-  - If the working tree is dirty: stop and ask, regardless of whether the dirty files overlap with the intended edit.
+  - If the working tree is dirty, determine whose changes they are before editing.
+    - If the dirty changes are yours from the current issue or workflow, commit them at a coherent checkpoint with a useful message, then continue.
+    - If the dirty changes are mine, unrelated, or cannot be confidently attributed, stop and ask.
+  - A commit is a reversible version-history checkpoint, not issue closure. Issue closure only happens under the documented SDLC closure rule.
   - Read-only operations are exempt. Scratch files under `./.agent/tmp/` (or paths covered by `.gitignore`) are exempt.
 1.3 Never write to `{agent-home}/projects/*/memory/` or any auto-memory location. Rules I want remembered belong in AGENTS.md, SDLC.md, or in a referenced doc, where I can see them.
 1.4 Never overwrite or revert my edits. My edits are authoritative even if you disagree.

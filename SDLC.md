@@ -103,6 +103,12 @@ The table above lists **SDLC-flow** skills. Other skills exist outside this flow
 
 I may skip, reorder, or repeat skills as needed. The audits (`/audit-acs`, `/audit-tests`) are optional tools I invoke when I want a second opinion. The only hard constraints are the §1 prohibitions and §2 gate keywords.
 
+### Commit cadence
+
+Commit at useful checkpoints during issue work: after red tests are written, after implementation passes the issue tests, after documentation or review updates, and before making further verification or follow-up changes. Do not keep accumulating a large dirty working tree while continuing to change code or configuration.
+
+Commits are reversible version-history checkpoints, not approval or closure. Never use auto-close keywords in commit messages; issues are closed only after **APPROVED n**.
+
 ### Phase 5: Closure (after APPROVED)
 
 After I pass Gate 3 with **APPROVED n**:
