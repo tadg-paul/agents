@@ -57,6 +57,7 @@ Earlier iterations migrated ACs at SATISFIED. That was reverted because the comb
 
 Rules that hold across both locations:
 
+- The issue AC table column definitions, Tests-entry format, status emoji, removed-entry strikethrough format, and key line apply equally after migration to `./docs/ACs.md`.
 - Never create a second AC table in a later comment, even if ACs have changed.
 - If ACs need to change, edit them in place (in the issue during drafting, in `./docs/ACs.md` after migration). Add a comment on the originating issue summarizing what changed and why.
 - Duplicating ACs across locations is a known failure mode: it creates ambiguity about which are current.
@@ -153,6 +154,8 @@ For projects of non-trivial size, ACs live in `./docs/ACs.md` - a single canonic
 
 Group ACs by feature area, not by issue. AC IDs remain issue-scoped (do not renumber) - they just acquire a new home.
 
+The central document preserves the issue AC table semantics. Each migrated AC entry carries the same AC text and the same Tests content: status emoji, test ID, type prefix, description, removed-test strikethrough where applicable, and the same key line used in issue AC tables.
+
 ```markdown
 # Acceptance Criteria
 
@@ -167,8 +170,12 @@ Last migrated: AC18.2 from #18 on YYYY-MM-DD
 
 ### AC{issue}.{n} - <falsifiable system state, copied verbatim>
 - Introduced: #{issue} (closed YYYY-MM-DD)
-- Tests: <test IDs and brief descriptions>
-- Status: ✅ holding | ⏳ pending | ❌ failing
+- Tests:
+  - ✅ RT-{issue}.1: <description>
+  - ⏳ UT-{issue}.1: <description>
+  - ~~🚫 OT-{issue}.1: <description>~~
+
+**Key:** ✅ passing · ⏳ pending · ❌ failing · ~~🚫 removed~~
 ```
 
 ### Immutability and supersession

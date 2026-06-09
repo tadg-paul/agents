@@ -107,7 +107,7 @@ I may skip, reorder, or repeat skills as needed. The audits (`/audit-acs`, `/aud
 
 After I pass Gate 3 with **APPROVED n**:
 
-1. Migrate the issue's AC rows to `./docs/ACs.md` (the central spec). Allocate next sequential IDs, preserve cross-references, link each test in the Tests column. If `./docs/ACs.md` does not yet exist, create it with the standard header (cutover date, last-migrated AC). See ISSUES.md §"Single source of truth".
+1. Migrate the issue's AC rows to `./docs/ACs.md` (the central spec). Allocate next sequential IDs, preserve cross-references, and preserve the Tests column content for each AC: status emoji, test ID, type prefix, description, and removed-test strikethrough where applicable. If `./docs/ACs.md` does not yet exist, create it with the standard header (cutover date, last-migrated AC), using the same key line and AC/Test semantics as the issue AC table. See ISSUES.md §"Single source of truth".
 2. Close the issue with `gh issue close [n]`.
 3. Tag a minor point release if applicable.
 
