@@ -4,6 +4,7 @@ set -euo pipefail
 
 REPO="$(cd "$(dirname "$0")" && pwd)"
 TARGET="${HOME}/.codex"
+SKILLS_TARGET="${HOME}/.agents/skills"
 
 move_to_backup() {
     local target="$1"
@@ -31,13 +32,13 @@ confirm_replace() {
     fi
 
     case "$reply" in
-        [Yy] | [Yy][Ee][Ss])
-            return 0
-            ;;
-        *)
-            printf 'Skipping %s\n' "$target"
-            return 1
-            ;;
+    [Yy] | [Yy][Ee][Ss])
+        return 0
+        ;;
+    *)
+        printf 'Skipping %s\n' "$target"
+        return 1
+        ;;
     esac
 }
 
@@ -114,16 +115,32 @@ install_copy() {
     cp "$source" "$target"
 }
 
+install_skill_symlinks() {
+    local source_dir="$1"
+    local target_dir="$2"
+    local skill
+
+    mkdir -p "$target_dir"
+    for skill in "$source_dir"/*; do
+        [[ -d "$skill" ]] || continue
+        install_symlink "$skill" "$target_dir/$(basename "$skill")"
+    done
+}
+
 mkdir -p "$TARGET"
 
 install_symlink "$REPO/AGENTS.md" "$TARGET/AGENTS.md"
 install_symlink "$REPO/SDLC.md" "$TARGET/SDLC.md"
 install_symlink "$REPO/docs" "$TARGET/docs"
 install_symlink "$REPO/commands" "$TARGET/prompts-commands"
+install_skill_symlinks "$REPO/skills" "$SKILLS_TARGET"
 install_copy "$REPO/.gitignore" "$TARGET/.gitignore"
 
 printf 'Managed paths in %s:\n' "$TARGET"
 ls -la "$TARGET/AGENTS.md" "$TARGET/SDLC.md" "$TARGET/docs" "$TARGET/prompts-commands" "$TARGET/.gitignore"
+
+printf '\nManaged skill paths in %s:\n' "$SKILLS_TARGET"
+ls -la "$SKILLS_TARGET"
 
 printf '\nNext step -- review and merge into %s/config.toml:\n  %s/config.example.toml\n' \
     "$TARGET" "$REPO"

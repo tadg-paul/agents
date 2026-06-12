@@ -36,9 +36,11 @@ Creates managed paths in `~/.claude/`:
 | `commands` | symlink to `commands/` |
 | `.gitignore` | copied from `.gitignore` |
 
+It also creates one symlink per shared skill under `~/.claude/skills/<skill>/`.
+
 Then review and merge `settings.example.json` into `~/.claude/settings.json`. The file is annotated - do not replace an existing `settings.json` wholesale; merge the relevant entries.
 
-Claude Code reads `~/.claude/commands/` as custom slash commands, so the SDLC command files are directly invocable there (for example `/draft-issue`, `/build`, `/review`).
+Claude Code reads `~/.claude/commands/` as custom slash commands and `~/.claude/skills/` as agent skills. Gate-equivalent and state-changing workflows stay in `commands/`; draft and advisory capabilities live in `skills/`.
 
 ### Codex CLI
 
@@ -56,11 +58,13 @@ Creates managed paths in `~/.codex/`:
 | `prompts-commands` | symlink to `commands/` |
 | `.gitignore` | copied from `.gitignore` |
 
+It also creates one symlink per shared skill under `$HOME/.agents/skills/<skill>/`, which is Codex's user-skill location.
+
 Then review and merge `config.example.toml` into `~/.codex/config.toml`. Do not replace the live file wholesale - existing `[projects.*]` trust entries will be lost.
 
-Codex CLI support for these command files is limited. As verified against `codex-cli 0.137.0`, Codex does not currently expose a supported custom slash-command or saved-prompt loader that makes files in `~/.codex/prompts-commands/` invocable as `/draft-issue`, `/build`, etc. The symlink is installed as a prompt library and future-compatible location, not as a working Codex slash-command mechanism.
+Codex CLI support for command files is limited. As verified against `codex-cli 0.137.0`, Codex does not currently expose a supported custom slash-command or saved-prompt loader that makes files in `~/.codex/prompts-commands/` invocable as `/build`, `/review`, etc. The symlink is installed as a prompt library and future-compatible location, not as a working Codex slash-command mechanism.
 
-The files are deliberately not installed as Codex skills. Skills can be selected or triggered by Codex based on name and description, but SDLC commands such as `/build` are authorization acts: they must only run when the human explicitly invokes that exact workflow. Shelling a prompt into `codex exec` is possible, but it starts a non-interactive exec run rather than continuing the active TUI conversation, so it is not equivalent to the Claude Code slash-command workflow.
+Only safe draft and advisory capabilities are installed as Codex skills. Codex scans `$HOME/.agents/skills` for user skills and follows symlinked skill folders. Skills can be selected or triggered by Codex based on name and description, so SDLC commands such as `/build` remain command prompts rather than skills: they are authorization acts and must only run when the human explicitly invokes that exact workflow. Shelling a prompt into `codex exec` is possible, but it starts a non-interactive exec run rather than continuing the active TUI conversation, so it is not equivalent to the Claude Code slash-command workflow.
 
 ### Using both agents simultaneously
 
@@ -155,7 +159,8 @@ The framework is built in layers. Each layer has a single purpose and only loads
       PYTHON.md
       GO.md
       WEB.md
-  commands/                 # Claude Code slash commands; Codex prompt library
+  commands/                 # Human-invoked action workflows; Codex prompt library
+  skills/                   # Safe draft/advisory skills shared by Claude Code and Codex
 
 {agent-home}/               # Symlinks into this repo (created by setup-*.sh)
   CLAUDE.md -> AGENTS.md    # Claude Code entry point
@@ -167,6 +172,9 @@ The framework is built in layers. Each layer has a single purpose and only loads
   .gitignore                 # Copied drop-in allowlist for the agent home
   settings.json             # Claude Code harness config (from settings.example.json)
   config.toml               # Codex CLI agent config (from config.example.toml)
+
+~/.claude/skills/<skill>/    -> skills/<skill>/       # Claude Code shared skills
+~/.agents/skills/<skill>/    -> skills/<skill>/       # Codex CLI user skills
 
 <project>/                  # Per-project layer (a separate repo)
   AGENTS.md                 # Optional - project-specific rules
@@ -480,32 +488,32 @@ Each global file has a single purpose. The "What it covers" sections list curren
 
 ## Skills Reference
 
-Skills are slash commands the human invokes. They are tools, not gates. The gate keywords (`PROCEED`, `APPROVED`) are the only hard stops; between gates, the agent works continuously.
+Commands and skills are tools, not gates. The gate keywords (`PROCEED`, `APPROVED`) are the only hard stops; between gates, the agent works continuously.
 
-### SDLC-flow skills
+### SDLC-flow skills and commands
 
 These move work through the issue lifecycle.
 
-| Skill | Purpose | Ends with |
-|---|---|---|
-| `/draft-issue` | Create issue with ACs and test specs only (decomposed path) | DRAFT ISSUE CREATED |
-| `/draft-design-issue` | Draft issue + solution design in one pass (no code) | AWAITING PROCEED |
-| `/draft-bug-fix` | Draft a bug-fix issue referencing existing ACs (no new AC table) | AWAITING PROCEED |
-| `/design-solution` | Document the solution on the issue | AWAITING PROCEED |
-| `/write-tests` | Write test code only (TDD red phase) | Tests committed, confirmed failing |
-| `/implement` | Write code to pass tests | Tests green |
-| `/review` | Full review: make test, standards, demo UTs, summarize | READY FOR REVIEW |
-| `/build n` | **PROCEED-equivalent.** Orchestrates the full post-PROCEED chain: loads `CODING.md` + relevant `CODE/<language>.md`, runs `/write-tests` (with lightweight checklist), `/implement` (with checklist citing CODING.md and language doc sections), `/review`, and presents the mandatory end-of-gate ceremony (test results, UT demo, AWAITING APPROVAL). Human-invocation only -- treats invocation as the PROCEED authorization for issue #n. | AWAITING APPROVAL |
+| Tool | Location | Purpose | Ends with |
+|---|---|---|---|
+| `/draft-issue` | `skills/` | Create issue with ACs and test specs only (decomposed path) | DRAFT ISSUE CREATED |
+| `/draft-design-issue` | `skills/` | Draft issue + solution design in one pass (no code) | AWAITING PROCEED |
+| `/draft-bug-fix` | `skills/` | Draft a bug-fix issue referencing existing ACs (no new AC table) | AWAITING PROCEED |
+| `/design-solution` | `skills/` | Document the solution on the issue | AWAITING PROCEED |
+| `/write-tests` | `commands/` | Write test code only (TDD red phase) | Tests committed, confirmed failing |
+| `/implement` | `commands/` | Write code to pass tests | Tests green |
+| `/review` | `commands/` | Full review: make test, standards, demo UTs, summarize | READY FOR REVIEW |
+| `/build n` | `commands/` | **PROCEED-equivalent.** Orchestrates the full post-PROCEED chain: loads `CODING.md` + relevant `CODE/<language>.md`, runs `/write-tests` (with lightweight checklist), `/implement` (with checklist citing CODING.md and language doc sections), `/review`, and presents the mandatory end-of-gate ceremony (test results, UT demo, AWAITING APPROVAL). Human-invocation only -- treats invocation as the PROCEED authorization for issue #n. | AWAITING APPROVAL |
 
-After `PROCEED` or `/build n` (which is PROCEED-equivalent), the agent runs the test-write -> implement -> review chain continuously without waiting for further instruction. `/build` is the recommended path when the human wants the whole chain to run with the inter-phase checklists and the end-of-gate ceremony enforced. Invoking the underlying skills individually remains supported for cases where only one phase is wanted (e.g. re-running just `/review` after a fix).
+After `PROCEED` or `/build n` (which is PROCEED-equivalent), the agent runs the test-write -> implement -> review chain continuously without waiting for further instruction. `/build` is the recommended path when the human wants the whole chain to run with the inter-phase checklists and the end-of-gate ceremony enforced. Invoking the underlying tools individually remains supported for cases where only one phase is wanted (e.g. re-running just `/review` after a fix).
 
 ### Discovery and migration
 
-| Skill | Purpose |
+| Tool | Purpose |
 |---|---|
-| `/start-discovery` | Open a discovery (sketch) session, tagged issue, no AC table |
-| `/end-discovery` | Close a discovery: promote to a real issue, or rule it out |
-| `/migrate-acs` | Migrate ACs from a legacy issue into `./docs/ACs.md` |
+| `/start-discovery` | Open a discovery (sketch) session, tagged issue, no AC table (`commands/`) |
+| `/end-discovery` | Close a discovery: promote to a real issue, or rule it out (`commands/`) |
+| `/migrate-acs` | Migrate ACs from a legacy issue into `./docs/ACs.md` (`commands/`) |
 
 ### Advisory (no code changes)
 

@@ -1,3 +1,8 @@
+---
+name: recommendations-please
+description: Provide concrete expert recommendations for a domain or technical decision without making file changes.
+---
+
 You are an expert in this domain.
 Give clear, actionable recommendations to solve this.
 

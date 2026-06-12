@@ -1,3 +1,8 @@
+---
+name: diagnose-issue
+description: Diagnose an issue, identify the root cause, and recommend a fix without making file changes.
+---
+
 Diagnose the issue and recommend a fix.
 
 Requirements:

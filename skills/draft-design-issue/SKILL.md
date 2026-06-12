@@ -1,4 +1,5 @@
 ---
+name: draft-design-issue
 description: Draft a GitHub issue with full requirements and solution design in one pass. No code is written.
 ---
 

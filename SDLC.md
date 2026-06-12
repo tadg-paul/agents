@@ -68,29 +68,29 @@ I drive the workflow with gate keywords. The gates (PROCEED, APPROVED) are the o
 - After **PROCEED n**: proceed through writing tests (TDD red), implementation (green), and review, and end with `READY FOR REVIEW - issue #n`. Do not stop in the middle for me to invoke each phase.
 - After **APPROVED n**: close the issue (see Phase 5: Closure below).
 
-Skills are tools, not gates. I invoke them when I want a specific phase done in isolation, or when I want an advisory pass (`/audit-acs`, `/audit-tests`, `/audit-code`, `/diagnose-issue`). You do not "wait for the next skill" -- if I have given you a gate keyword, the work between that gate and the next is yours to do. Never tell me you are waiting for me to invoke a skill.
+Commands and skills are tools, not gates. I invoke them when I want a specific phase done in isolation, or when I want an advisory pass (`/audit-acs`, `/audit-tests`, `/audit-code`, `/diagnose-issue`). You do not "wait for the next tool" -- if I have given you a gate keyword, the work between that gate and the next is yours to do. Never tell me you are waiting for me to invoke a skill.
 
-### Available skills
+### Available commands and skills
 
-| Skill | Purpose | Gate |
-|-------|---------|------|
-| `/draft-issue` | Create issue with ACs and test specs only (decomposed path) | DRAFT ISSUE CREATED |
-| `/draft-design-issue` | Draft issue + solution design in one pass (no code) | AWAITING PROCEED |
-| `/draft-bug-fix` | Draft a bug-fix issue referencing existing ACs (no new AC table) | AWAITING PROCEED |
-| `/start-discovery` | Open a discovery (sketch) session in a tagged issue | None (sketches only) |
-| `/end-discovery` | Close a discovery session non-destructively: promote to a real issue, or rule the direction out. Sketch commits remain in history. | None |
-| `/migrate-acs` | Migrate ACs from a legacy issue into `./docs/ACs.md` | None |
-| `/audit-acs` | Challenge AC coverage (advisory, no code) | None |
-| `/audit-tests` | Challenge test coverage (advisory, no code) | None |
-| `/design-solution` | Document solution on issue | AWAITING PROCEED |
-| `/write-tests` | Write test code only (TDD red phase) | Tests committed, confirmed failing |
-| `/implement` | Write code to pass tests | Tests green |
-| `/audit-code` | Review code against CODING.md + language best practice (advisory, no code) | None |
-| `/review` | Run make test, check standards, demo UTs | READY FOR REVIEW |
-| `/build n` | PROCEED-equivalent. Orchestrates `/write-tests` -> `/implement` -> `/review` with inter-phase checklists and the mandatory end-of-gate ceremony. Human-invocation only. | AWAITING APPROVAL |
-| `/summarize-issues` | Summarize open issues, gap analysis against architecture/plan, prioritize | None |
+| Tool | Location | Purpose | Gate |
+|------|----------|---------|------|
+| `/draft-issue` | `skills/` | Create issue with ACs and test specs only (decomposed path) | DRAFT ISSUE CREATED |
+| `/draft-design-issue` | `skills/` | Draft issue + solution design in one pass (no code) | AWAITING PROCEED |
+| `/draft-bug-fix` | `skills/` | Draft a bug-fix issue referencing existing ACs (no new AC table) | AWAITING PROCEED |
+| `/design-solution` | `skills/` | Document solution on issue | AWAITING PROCEED |
+| `/audit-acs` | `skills/` | Challenge AC coverage (advisory, no code) | None |
+| `/audit-tests` | `skills/` | Challenge test coverage (advisory, no code) | None |
+| `/audit-code` | `skills/` | Review code against CODING.md + language best practice (advisory, no code) | None |
+| `/summarize-issues` | `skills/` | Summarize open issues, gap analysis against architecture/plan, prioritize | None |
+| `/start-discovery` | `commands/` | Open a discovery (sketch) session in a tagged issue | None (sketches only) |
+| `/end-discovery` | `commands/` | Close a discovery session non-destructively: promote to a real issue, or rule the direction out. Sketch commits remain in history. | None |
+| `/migrate-acs` | `commands/` | Migrate ACs from a legacy issue into `./docs/ACs.md` | None |
+| `/write-tests` | `commands/` | Write test code only (TDD red phase) | Tests committed, confirmed failing |
+| `/implement` | `commands/` | Write code to pass tests | Tests green |
+| `/review` | `commands/` | Run make test, check standards, demo UTs | READY FOR REVIEW |
+| `/build n` | `commands/` | PROCEED-equivalent. Orchestrates `/write-tests` -> `/implement` -> `/review` with inter-phase checklists and the mandatory end-of-gate ceremony. Human-invocation only. | AWAITING APPROVAL |
 
-The table above lists **SDLC-flow** skills. Other skills exist outside this flow (`/diagnose-issue`, `/recommendations-please`, `/useful-be`, `/ss`, and any harness- or plugin-provided skills like `/update-config`, `/security-review`, `/init`, etc.). Those are general-purpose tools rather than process steps; using them does not advance an issue through gates.
+The table above lists **SDLC-flow** tools. Other skills exist outside this flow (`/diagnose-issue`, `/recommendations-please`, `/useful-be`, `/ss`, and any harness- or plugin-provided skills like `/update-config`, `/security-review`, `/init`, etc.). Those are general-purpose tools rather than process steps; using them does not advance an issue through gates.
 
 ### Typical flow
 
@@ -99,7 +99,7 @@ The table above lists **SDLC-flow** skills. Other skills exist outside this flow
 (or, decomposed: /draft-issue -> /design-solution -> PROCEED n -> /write-tests -> /implement -> /review -> APPROVED n)
 ```
 
-I may skip, reorder, or repeat skills as needed. The audits (`/audit-acs`, `/audit-tests`) are optional tools I invoke when I want a second opinion. The only hard constraints are the §1 prohibitions and §2 gate keywords.
+I may skip, reorder, or repeat commands and skills as needed. The audits (`/audit-acs`, `/audit-tests`) are optional tools I invoke when I want a second opinion. The only hard constraints are the §1 prohibitions and §2 gate keywords.
 
 ### Commit cadence
 

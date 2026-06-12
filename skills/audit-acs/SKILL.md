@@ -1,4 +1,5 @@
 ---
+name: audit-acs
 description: Challenge acceptance criteria for coverage gaps, missing edge cases, and quality violations. Advisory only -- no code or file changes.
 ---
 

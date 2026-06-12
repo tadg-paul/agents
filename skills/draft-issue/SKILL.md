@@ -1,4 +1,5 @@
 ---
+name: draft-issue
 description: Create a GitHub issue with acceptance criteria and test specifications following SDLC standards.
 ---
 

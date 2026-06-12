@@ -1,4 +1,5 @@
 ---
+name: summarize-issues
 description: Summarize all open issues, review against architecture and implementation plan, identify gaps, and recommend prioritization.
 ---
 

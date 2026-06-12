@@ -1,4 +1,5 @@
 ---
+name: audit-tests
 description: Challenge test specifications for coverage gaps, gaming opportunities, and integration risks. Advisory only -- no code or file changes.
 ---
 

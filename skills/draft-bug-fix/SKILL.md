@@ -1,4 +1,5 @@
 ---
+name: draft-bug-fix
 description: Draft a bug-fix issue that references existing ACs. No new AC table is created. See ISSUES.md §"Bug-fix issues reference existing ACs".
 ---
 

@@ -1,4 +1,5 @@
 ---
+name: design-solution
 description: Document the solution design for an existing issue. No code is written.
 ---
 

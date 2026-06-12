@@ -1,3 +1,8 @@
+---
+name: ss
+description: Review the most recent screenshots for visual context.
+---
+
 Please review the most recent screenshot(s) in order to understand the context.
 
 Execute:

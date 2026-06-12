@@ -1,4 +1,5 @@
 ---
+name: audit-code
 description: Review implementation code against CODING.md and language best practice. Advisory only -- no file changes.
 ---
 
