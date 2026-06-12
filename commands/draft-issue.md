@@ -20,4 +20,4 @@ Create a GitHub issue for the current task. Read and follow @{agent-home}/docs/I
    - Any RT for ephemeral/one-time verification -> change to OT
 8. Post the issue.
 
-**End with:** `AWAITING SATISFACTION - issue #NNN` and the issue link. **STOP.**
+**End with:** `DRAFT ISSUE CREATED - issue #NNN` and the issue link. **STOP.** This is the decomposed path; solution design and PROCEED are still required before code may be written.

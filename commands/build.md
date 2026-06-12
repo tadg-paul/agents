@@ -49,6 +49,6 @@ Present in chat:
    - Which AC rows from this issue will be migrated to `./docs/ACs.md` (the central spec) -- list each one with the proposed new ID, preserve any cross-references
    - The issue will be closed with `gh issue close #n`
    - A point release will be tagged if applicable
-   - **None of this happens until I type `APPROVED n`.** AC migration and issue closure are post-approval acts; the human's APPROVED is the authorization for all three.
+   - **None of this happens until I type `APPROVED n`.** AC migration, issue closure, and tagging are post-approval acts; the human's APPROVED is the authorization for those closure actions.
 
 **End with:** `AWAITING APPROVAL - issue #n` and the issue link. To close, the human will type `APPROVED n`.

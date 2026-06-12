@@ -18,7 +18,7 @@ Clone this repository to a stable location:
 git clone https://github.com/tadg-paul/agents.git ~/code/agents
 ```
 
-Run the setup script for your agent (or both — they are independent):
+Run the setup script for your agent (or both - they are independent):
 
 ### Claude Code
 
@@ -36,7 +36,7 @@ Creates managed paths in `~/.claude/`:
 | `commands` | symlink to `commands/` |
 | `.gitignore` | copied from `.gitignore` |
 
-Then review and merge `settings.example.json` into `~/.claude/settings.json`. The file is annotated — do not replace an existing `settings.json` wholesale; merge the relevant entries.
+Then review and merge `settings.example.json` into `~/.claude/settings.json`. The file is annotated - do not replace an existing `settings.json` wholesale; merge the relevant entries.
 
 Claude Code reads `~/.claude/commands/` as custom slash commands, so the SDLC command files are directly invocable there (for example `/draft-issue`, `/build`, `/review`).
 
@@ -56,7 +56,7 @@ Creates managed paths in `~/.codex/`:
 | `prompts-commands` | symlink to `commands/` |
 | `.gitignore` | copied from `.gitignore` |
 
-Then review and merge `config.example.toml` into `~/.codex/config.toml`. Do not replace the live file wholesale — existing `[projects.*]` trust entries will be lost.
+Then review and merge `config.example.toml` into `~/.codex/config.toml`. Do not replace the live file wholesale - existing `[projects.*]` trust entries will be lost.
 
 Codex CLI support for these command files is limited. As verified against `codex-cli 0.137.0`, Codex does not currently expose a supported custom slash-command or saved-prompt loader that makes files in `~/.codex/prompts-commands/` invocable as `/draft-issue`, `/build`, etc. The symlink is installed as a prompt library and future-compatible location, not as a working Codex slash-command mechanism.
 
@@ -112,7 +112,7 @@ The specific patterns underlying the headline failures, named so they can be ref
 - *The `((count++))` gotcha.* Returns exit code 1 when the result is zero, triggering `set -e`. The shortcut is `|| true`; the correct fix is `count=$((count + 1))`.
 
 **Process shortcuts:**
-- *Self-authorizing past gates.* Writing `SATISFIED`/`PROCEED`/`APPROVED` into the model's own output, advancing without human review.
+- *Self-authorizing past gates.* Writing `PROCEED`/`APPROVED` into the model's own output, advancing without human review.
 - *Declaring completion without demonstration.* Saying "fixed" or "done" when tests pass but the user-facing behaviour has not been shown.
 - *Overwriting the human's edits.* Reverting human changes the model disagrees with. Human edits are authoritative.
 - *Treating a question as an instruction.* "What do you think of X?" parsed as "go and implement X", with product decisions made en route.
@@ -180,7 +180,7 @@ The framework is built in layers. Each layer has a single purpose and only loads
 
 Two splits divide the framework. They are orthogonal:
 
-**Universal vs. code-specific.** `AGENTS.md` holds the rules that apply to any work the agent does with the human -- writing code, drafting documentation, organizing notes, planning, research. `SDLC.md` holds the rules that apply only when handling code: the three gates, the failure modes catalogue, the workflow. The split was introduced so the framework can be used for non-code work without dragging the full SDLC apparatus into every interaction.
+**Universal vs. code-specific.** `AGENTS.md` holds the rules that apply to any work the agent does with the human -- writing code, drafting documentation, organizing notes, planning, research. `SDLC.md` holds the rules that apply only when handling code: the two gates, the failure modes catalogue, the workflow. The split was introduced so the framework can be used for non-code work without dragging the full SDLC apparatus into every interaction.
 
 **Process vs. craft.** `SDLC.md` describes *the process* -- how work moves from idea to merged code. `docs/` describes *the craft* -- what good acceptance criteria look like (`ISSUES.md`), how to test real-user behaviour (`TESTING.md`), how to write code in each language (`CODING.md` + `CODE/`), how git is used (`GIT.md`), how documentation is structured (`DOCUMENTATION.md`). The process documents tell you *when* to do something; the craft documents tell you *how to do it well*.
 
@@ -208,17 +208,16 @@ If a suffix is missing, that document's rules were not in scope for the interact
 
 The root canary ("EHLO") is more than a read receipt. It is a pledge. Saying "EHLO" attests that the agent has read `CLAUDE.md`, agrees with it, agrees with its spirit, and commits not to game it. The same pledge is at the bottom of `SDLC.md`. Details and the wording history are in [Canary System](#canary-system) below.
 
-## The Three Gates
+## The Two Gates
 
-The framework's load-bearing process mechanism. Three keyword checkpoints govern all issue-driven work; only the human types them. Each gate authorizes the next phase of work.
+The framework's load-bearing process mechanism. Two keyword checkpoints govern all issue-driven work; only the human types them. Each gate authorizes the next phase of work.
 
 | Gate | Keyword | What it authorizes |
 |------|---------|-------------------|
-| Gate 1: Requirements | `SATISFIED n` | Solution design may begin |
-| Gate 2: Solution | `PROCEED n` | Test and implementation code may be written |
-| Gate 3: Review | `APPROVED n` | Issue may be closed |
+| Gate 1: Implementation | `PROCEED n` | Requirements, ACs, test plan, and solution design are accepted; test and implementation work may begin |
+| Gate 2: Review | `APPROVED n` | Reviewed result is accepted; issue may be closed |
 
-Gate keywords must come from the human, typed in ALL CAPS, followed by the issue number (e.g. `SATISFIED 12`). The agent may never write a gate keyword itself -- this is an absolute prohibition. The strict format requirements (ALL CAPS, with issue number, in the current conversation turn, from the human) were refined after the agent found ways to self-authorize: writing keywords into its own output, referencing approvals from different issues, and inferring approval from context.
+Gate keywords must come from the human, typed in ALL CAPS, followed by the issue number (e.g. `PROCEED 12`). The agent may never write a gate keyword itself -- this is an absolute prohibition. The strict format requirements (ALL CAPS, with issue number, in the current conversation turn, from the human) were refined after the agent found ways to self-authorize: writing keywords into its own output, referencing approvals from different issues, and inferring approval from context.
 
 Enforcement is by §1 prohibition only -- the keywords are text-recognized, not harness-blocked. An earlier iteration implemented each keyword as a skill with `disable-model-invocation: true` in its frontmatter. It failed both ways: the agent sometimes refused to acknowledge the keyword and demanded the skill be invoked explicitly (false negative -- overcautious), and sometimes invoked the skill itself anyway (false positive -- the harness lock did not reliably prevent self-invocation under all conditions). The scaffolding was retired in favour of pure text recognition plus the §1 prohibition. The `/build` skill (see [Skills Reference](#skills-reference)) is a related case: it acts as a PROCEED-equivalent when invoked by the human as a slash command, with the human-only constraint carried as a hard prohibition in the skill body. Slash-command invocation avoids the false-negative failure (no keyword to misrecognize); the §1-style text prohibition is the same defence used by the keywords themselves against false positives.
 
@@ -226,7 +225,6 @@ Enforcement is by §1 prohibition only -- the keywords are text-recognized, not 
 
 The gates are the only hard stops. Between gates, the agent works continuously without waiting for further instruction:
 
-- **After `SATISFIED n`:** proceed through solution design, ending with `AWAITING PROCEED - issue #n`.
 - **After `PROCEED n`:** proceed through writing tests (TDD red), implementation (green), and review, ending with `READY FOR REVIEW - issue #n`. Do not stop in the middle.
 - **After `APPROVED n`:** close the issue.
 
@@ -263,7 +261,7 @@ Each global file has a single purpose. The "What it covers" sections list curren
 
 **What it covers:**
 - Code-specific prohibitions (on top of the universals): never write source code before PROCEED, never write a gate keyword yourself, never close a GitHub issue without APPROVED, never mark a user test as passing, never use `--no-verify` etc., never create a second AC table
-- The three quality gates (see above)
+- The two quality gates (see above)
 - The autonomous-action exception (BYPASS-GATE-7) and what kinds of work qualify
 - The process checklist: between gates, do the work continuously; never tell the human you are waiting for a skill
 - 13 documented failure modes AI coding agents are known to exhibit, named so they can be referred to by number
@@ -482,7 +480,7 @@ Each global file has a single purpose. The "What it covers" sections list curren
 
 ## Skills Reference
 
-Skills are slash commands the human invokes. They are tools, not gates. The gate keywords (`SATISFIED`, `PROCEED`, `APPROVED`) are the only hard stops; between gates, the agent works continuously.
+Skills are slash commands the human invokes. They are tools, not gates. The gate keywords (`PROCEED`, `APPROVED`) are the only hard stops; between gates, the agent works continuously.
 
 ### SDLC-flow skills
 
@@ -490,9 +488,9 @@ These move work through the issue lifecycle.
 
 | Skill | Purpose | Ends with |
 |---|---|---|
-| `/draft-issue` | Create issue with ACs and test specs | AWAITING SATISFACTION |
+| `/draft-issue` | Create issue with ACs and test specs only (decomposed path) | DRAFT ISSUE CREATED |
 | `/draft-design-issue` | Draft issue + solution design in one pass (no code) | AWAITING PROCEED |
-| `/draft-bug-fix` | Draft a bug-fix issue referencing existing ACs (no new AC table) | AWAITING SATISFACTION |
+| `/draft-bug-fix` | Draft a bug-fix issue referencing existing ACs (no new AC table) | AWAITING PROCEED |
 | `/design-solution` | Document the solution on the issue | AWAITING PROCEED |
 | `/write-tests` | Write test code only (TDD red phase) | Tests committed, confirmed failing |
 | `/implement` | Write code to pass tests | Tests green |
@@ -534,7 +532,7 @@ The audit and diagnose skills write their long-form findings to `./.agent/tmp/<s
 ### Typical flow
 
 ```
-/draft-issue -> SATISFIED n -> /design-solution -> PROCEED n -> [autonomous: write-tests -> implement -> review] -> APPROVED n
+/draft-issue -> /design-solution -> PROCEED n -> [autonomous: write-tests -> implement -> review] -> APPROVED n
 ```
 
 Or the faster path, for clearly-scoped work:
@@ -711,7 +709,7 @@ The system looks more elaborate than it strictly needs to be, but each mechanism
 
 ## History
 
-The framework arrived at its current shape through five iterations, all with Claude Code. The blog post tells that story narratively; this section is the short summary.
+The framework arrived at its current shape through seven iterations. The blog post tells the original Claude Code story narratively; this section is the short summary.
 
 1. **Traffic lights.** Green/Amber/Red classification of actions. Too loose; the agent self-classified into the most autonomous category.
 2. **Single approval gate.** One `APPROVED` checkpoint before any code. Stopped premature implementation but conflated requirements, solution, and result into one decision.
@@ -719,6 +717,7 @@ The framework arrived at its current shape through five iterations, all with Cla
 4. **Three gates with skill-driven workflow.** APPROVED and CLOSE collapsed into one; the 32-step checklist decomposed into invocable skills. The human controls pacing; the agent does the work between gates continuously.
 5. **`AGENTS.md` / `SDLC.md` split.** Universal rules separated from code-specific machinery so the framework can be used for non-code work without dragging the SDLC apparatus into every interaction.
 6. **Platform-agnostic rewrite.** Agent-specific naming and path references replaced with generic conventions (`AGENTS.md`, `{agent-home}`, `.agent/tmp/`). Setup scripts added for Claude Code and Codex CLI. All rules and failure-mode documentation remain as developed with Claude Code.
+7. **Two gates with self-audited design issues.** `SATISFIED` was retired after `/draft-design-issue` made requirements, AC quality checks, test planning, and solution design the normal pre-PROCEED package. `PROCEED` now accepts that package and authorizes implementation; `APPROVED` still controls closure.
 
 The framework is never finished. New failure modes surface; rules are added in response. The full narrative -- including the failures that drove each iteration -- is in the [blog post](https://tadg.ie/blog/ai/2026-04-17-claude-code-sdlc/).
 

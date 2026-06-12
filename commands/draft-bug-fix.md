@@ -26,4 +26,4 @@ Draft a bug-fix issue for the current task. Read and follow @{agent-home}/docs/I
    - Regression tests target the original AC, not a new parallel one. ✓
 5. Post the issue.
 
-**End with:** `AWAITING SATISFACTION - issue #NNN` and the issue link. **STOP.**
+**End with:** `AWAITING PROCEED - issue #NNN` and the issue link. **STOP.** No code may be written until PROCEED is received.

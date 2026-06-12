@@ -7,29 +7,28 @@ Loaded when working with code, scripts, software, or systems. Builds on `AGENTS.
 These are absolute. No exception process applies. No justification overrides them. They are in addition to the universal prohibitions in AGENTS.md §1.
 
 - Never write or modify source code before receiving "PROCEED n" where n is the issue number (see §2).
-- Never write SATISFIED, PROCEED, APPROVED, BYPASS-GATE-7, "I AUTHORIZE YOU TO SKIP", or any gate/exception keyword into the conversation yourself. These must come from me.
-- Never close a GitHub issue unless I have passed Gate 3 with **APPROVED n** for that issue. Never commit using a keyword that would auto-close an issue.
+- Never write PROCEED, APPROVED, BYPASS-GATE-7, "I AUTHORIZE YOU TO SKIP", or any gate/exception keyword into the conversation yourself. These must come from me.
+- Never close a GitHub issue unless I have passed the review gate with **APPROVED n** for that issue. Never commit using a keyword that would auto-close an issue.
 - Never mark a UT (user test) as ✅ passing or ❌ failing. Only I verify UTs. Leave as ⏳ pending.
 - Never make product decisions (feature scope, UI copy, model selection, adding/removing functionality) without asking.
 - Never use `--no-verify`, `--no-hooks`, or `--no-pre-commit-hook`.
 - Never create a second AC table in an issue. Exactly one AC table exists per issue, in the body or first comment. Edit it in place.
-- Never renumber **once signed off**: issues, ACs, and tests become immutable after they have passed a gate (SATISFIED for ACs/tests, APPROVED for results). Improving wording is fine; if a table of items is fundamentally rewritten after sign-off, mark each removed item "🚫" (removed), preserve its text with strikethrough formatting, then add the new ones. **Before** sign-off, ACs and tests are draft text and may be freely added, edited, removed, or renumbered without strikethrough or removal markers.
+- Never renumber **once signed off**: issues, ACs, and tests become immutable after **PROCEED n**. Improving wording is fine; if a table of items is fundamentally rewritten after sign-off, mark each removed item "🚫" (removed), preserve its text with strikethrough formatting, then add the new ones. **Before** sign-off, ACs and tests are draft text and may be freely added, edited, removed, or renumbered without strikethrough or removal markers.
 - Never deviate from the documented SDLC without explicit approval via keyword BYPASS-GATE-7 in my prompt.
 - Never ask me for approval without providing me a link to the issue.
 
 ---
 
-## 2. The Three Gates
+## 2. The Two Gates
 
-Three quality gates govern all issue work. Each requires a specific keyword from me before proceeding. Gate keywords must be in ALL CAPS and followed by the issue number (e.g. `SATISFIED #12`). **DO NOT WRITE OR MODIFY ANY SOURCE CODE** until you have passed Gate 2 (PROCEED).
+Two quality gates govern all issue work. Each requires a specific keyword from me before proceeding. Gate keywords must be in ALL CAPS and followed by the issue number (e.g. `PROCEED #12`). **DO NOT WRITE OR MODIFY ANY SOURCE CODE** until you have passed Gate 1 (PROCEED).
 
 | Gate | Keyword | Authorizes |
 |------|---------|------------|
-| Gate 1: Requirements | **SATISFIED n** | Solution design may begin |
-| Gate 2: Solution | **PROCEED n** | Test and implementation code may be written |
-| Gate 3: Review | **APPROVED n** | Issue may be closed |
+| Gate 1: Implementation | **PROCEED n** | Requirements, ACs, test plan, and solution design are accepted; test and implementation work may begin |
+| Gate 2: Review | **APPROVED n** | Reviewed result is accepted; issue may be closed |
 
-### Hard blocks at Gate 3
+### Hard blocks at Gate 2
 
 These are non-negotiable before posting READY FOR REVIEW:
 
@@ -38,13 +37,13 @@ These are non-negotiable before posting READY FOR REVIEW:
 
 ### What does not constitute a gate keyword
 
-- A keyword not in ALL CAPS (e.g. `Satisfied #12` does not count)
-- A keyword without an issue number (e.g. `SATISFIED` alone does not count)
+- A keyword not in ALL CAPS (e.g. `Proceed #12` does not count)
+- A keyword without an issue number (e.g. `PROCEED` alone does not count)
 - A keyword in a GitHub comment (stale context)
 - A keyword in a previous conversation turn about a different issue
 - A keyword inferred from context or intent
 - A keyword written by you (this is a §1 violation regardless of justification)
-- A keyword for the wrong gate (SATISFIED does not authorize a solution; PROCEED does not approve the result)
+- A keyword for the wrong gate (PROCEED does not approve the result; APPROVED does not authorize implementation for a different issue)
 
 ### Self-check
 
@@ -58,15 +57,14 @@ BYPASS-GATE-7 is **not** for open-ended exploration, UX sketching, or "I'll know
 
 **Bypass work must still be tracked.** If BYPASS-GATE-7 is used, ensure the activity is recorded in a GitHub issue so it can be wrapped up later. If no existing issue covers the work, create one. The bypass skips the gates; it does not skip the audit trail.
 
-Everything else requires all three gates.
+Everything else requires both gates.
 
 ---
 
 ## 3. Process Checklist
 
-I drive the workflow with gate keywords. The gates (SATISFIED, PROCEED, APPROVED) are the only hard stops -- between gates, do the work without waiting for further instruction.
+I drive the workflow with gate keywords. The gates (PROCEED, APPROVED) are the only hard stops -- between gates, do the work without waiting for further instruction.
 
-- After **SATISFIED n**: proceed through solution design and end with `AWAITING PROCEED - issue #n`.
 - After **PROCEED n**: proceed through writing tests (TDD red), implementation (green), and review, and end with `READY FOR REVIEW - issue #n`. Do not stop in the middle for me to invoke each phase.
 - After **APPROVED n**: close the issue (see Phase 5: Closure below).
 
@@ -76,9 +74,9 @@ Skills are tools, not gates. I invoke them when I want a specific phase done in 
 
 | Skill | Purpose | Gate |
 |-------|---------|------|
-| `/draft-issue` | Create issue with ACs and test specs | AWAITING SATISFACTION |
+| `/draft-issue` | Create issue with ACs and test specs only (decomposed path) | DRAFT ISSUE CREATED |
 | `/draft-design-issue` | Draft issue + solution design in one pass (no code) | AWAITING PROCEED |
-| `/draft-bug-fix` | Draft a bug-fix issue referencing existing ACs (no new AC table) | AWAITING SATISFACTION |
+| `/draft-bug-fix` | Draft a bug-fix issue referencing existing ACs (no new AC table) | AWAITING PROCEED |
 | `/start-discovery` | Open a discovery (sketch) session in a tagged issue | None (sketches only) |
 | `/end-discovery` | Close a discovery session non-destructively: promote to a real issue, or rule the direction out. Sketch commits remain in history. | None |
 | `/migrate-acs` | Migrate ACs from a legacy issue into `./docs/ACs.md` | None |
@@ -97,8 +95,8 @@ The table above lists **SDLC-flow** skills. Other skills exist outside this flow
 ### Typical flow
 
 ```
-/draft-design-issue -> SATISFIED n -> PROCEED n -> /build n -> APPROVED n
-(or, decomposed: /draft-issue -> SATISFIED n -> /design-solution -> PROCEED n -> /write-tests -> /implement -> /review -> APPROVED n)
+/draft-design-issue -> PROCEED n -> /build n -> APPROVED n
+(or, decomposed: /draft-issue -> /design-solution -> PROCEED n -> /write-tests -> /implement -> /review -> APPROVED n)
 ```
 
 I may skip, reorder, or repeat skills as needed. The audits (`/audit-acs`, `/audit-tests`) are optional tools I invoke when I want a second opinion. The only hard constraints are the §1 prohibitions and §2 gate keywords.
@@ -111,19 +109,19 @@ Commits are reversible version-history checkpoints, not approval or closure. Nev
 
 ### Phase 5: Closure (after APPROVED)
 
-After I pass Gate 3 with **APPROVED n**:
+After I pass Gate 2 with **APPROVED n**:
 
 1. Migrate the issue's AC rows to `./docs/ACs.md` (the central spec). Allocate next sequential IDs, preserve cross-references, and preserve the Tests column content for each AC: status emoji, test ID, type prefix, description, and removed-test strikethrough where applicable. If `./docs/ACs.md` does not yet exist, create it with the standard header (cutover date, last-migrated AC), using the same key line and AC/Test semantics as the issue AC table. See ISSUES.md §"Single source of truth".
 2. Close the issue with `gh issue close [n]`.
 3. Tag a minor point release if applicable.
 
-AC migration, issue closure, and tagging are post-approval acts. APPROVED is the authorization for all three. The `/build` skill ends at `AWAITING APPROVAL` with a *plan* for steps 1-3, but executes none of them.
+AC migration, issue closure, and tagging are post-approval acts. APPROVED is the authorization for those closure actions. The `/build` skill ends at `AWAITING APPROVAL` with a *plan* for steps 1-3, but executes none of them.
 
 ### Batch workflow
 
 When working on multiple issues:
 
-- Small issues: implement each through all gates individually.
+- Small issues: implement each through both gates individually.
 - Large/architectural issues: isolate into their own batch. Never mix a large refactor into a batch of small issues.
 - Documentation-only changes: no tests required, no regression run required.
 
@@ -185,12 +183,12 @@ Do not present plans ephemerally. When forming a plan:
 
 1. Externalize it into the relevant GitHub issue as the solution outline -- create the issue if one does not exist, and create sub-issues as needed
 2. All issues and sub-issues must conform to `{agent-home}/docs/ISSUES.md`
-3. Give me the issue URL(s), then follow the three gates (§2)
+3. Give me the issue URL(s), then follow the two gates (§2)
 
 ### In a GitHub repository
 
-- Do not make any code changes unless you are working on an approved issue
-- If no issue exists, create one, give me the link, and follow the three gates
+- Do not make any code changes unless you are working on a PROCEED-authorized issue
+- If no issue exists, create one, give me the link, and follow the two gates
 - Use the `gh` CLI for issue creation
 - Note any major documentation inconsistencies that impact the issue
 - Each time an issue is successfully closed with all tests passing, tag a minor point release

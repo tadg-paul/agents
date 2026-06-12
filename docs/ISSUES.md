@@ -49,11 +49,11 @@ Every AC table must end with a key line:
 
 Each AC has exactly one canonical home at any time.
 
-- **While the issue is open:** the home is the issue body, or the first comment if GitHub's interface required the solution and ACs to be posted there. This covers drafting (pre-SATISFIED), solution design, implementation, review, and AWAITING APPROVAL.
+- **While the issue is open:** the home is the issue body, or the first comment if GitHub's interface required the solution and ACs to be posted there. This covers drafting (pre-PROCEED), solution design, implementation, review, and AWAITING APPROVAL.
 - **At closure (after APPROVED):** the home becomes `./docs/ACs.md` (see §"Central AC document"). AC migration is part of the close ceremony -- the ACs move out of the (now-closed) issue and into the central spec as their permanent home.
 - The central document is not a "second AC table" - it is the AC's permanent home post-closure. The issue is the change that introduced the ACs; the spec is where they live afterwards.
 
-Earlier iterations migrated ACs at SATISFIED. That was reverted because the combined `/draft-design-issue` path collapses SATISFIED into PROCEED, leaving no natural moment for the human to review the central-doc state before authorization. Close-time migration makes the migration automatic, atomic with closure, and impossible to forget.
+Earlier iterations migrated ACs before implementation authorization. That was reverted because the combined `/draft-design-issue` path leaves no natural moment for the human to review the central-doc state before authorization. Close-time migration makes the migration automatic, atomic with closure, and impossible to forget.
 
 Rules that hold across both locations:
 
@@ -141,8 +141,8 @@ Every sub-issue must also conform to this standard - a well-formed issue with AC
 
 - ACs follow the pattern `AC{issue}.{n}` - e.g. the first AC in issue #12 is `AC12.1`, then `AC12.2`, and so on.
 - Test IDs follow the same issue-scoped pattern: `RT-{issue}.{n}`, `OT-{issue}.{n}`, `UT-{issue}.{n}` - e.g. the first regression test for issue #12 is `RT-12.1`, the second is `RT-12.2`. Each prefix has its own sequence within the issue.
-- IDs become immutable **once the issue has passed Gate 1 (SATISFIED)**. After sign-off, never renumber, reuse, or delete IDs. If an AC is removed post-sign-off, mark it as `🚫 removed` in the table but do not delete the row or its ID. If a test is removed post-sign-off, mark it as removed in the test suite but do not delete the test or its ID.
-- **Before** Gate 1, ACs and tests are draft text. They may be freely added, edited, removed, or renumbered without strikethrough or removal markers - drafting is iterative until SATISFIED.
+- IDs become immutable **once PROCEED has been given for the issue**. After sign-off, never renumber, reuse, or delete IDs. If an AC is removed post-sign-off, mark it as `🚫 removed` in the table but do not delete the row or its ID. If a test is removed post-sign-off, mark it as removed in the test suite but do not delete the test or its ID.
+- **Before** PROCEED, ACs, tests, and solution design are draft text. They may be freely added, edited, removed, or renumbered without strikethrough or removal markers - drafting is iterative until PROCEED.
 
 ---
 
@@ -198,7 +198,7 @@ For existing projects with ACs scattered across closed issues, the migration to 
 
 ### Migration policy
 
-- **New issues (from cutover date):** follow the standard flow - ACs move to `./docs/ACs.md` at SATISFIED.
+- **New issues (from cutover date):** follow the standard flow - ACs move to `./docs/ACs.md` at closure after APPROVED.
 - **Legacy issues (pre-cutover, closed):** ACs remain in the issue body. They are citeable as `AC{n}.{m} (legacy - see #N)` until migrated.
 - **Forcing function:** any work that references a legacy AC must either (a) cite it as legacy for a one-shot reference, or (b) migrate it first and cite normally. Migrate when the AC is load-bearing and likely to be referenced again.
 
